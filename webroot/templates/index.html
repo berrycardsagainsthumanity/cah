@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cards against humanity</title>
+    <link rel="stylesheet" href="/static/css/cah.css?v={{ version }}"/>
+    <link rel="stylesheet" href="/static/css/jquery-ui-1.10.0.custom.css?v={{ version }}"/>
+</head>
+<body>
+<div class="wrapper container">
+    <div class="header">
+
+    </div>
+    <div class="left_pane">
+        <div class="hand_container">
+            <div class="hand container"></div>
+            <div class="hand_overlay overlay"><span
+                    class="hand_overlay_text overlay_text"></span></div>
+        </div>
+        <div class="play_area container">
+            <div class="play_area_black"></div>
+            <div class="play_area_whites"></div>
+            <div class="play_area_overlay overlay"><span
+                    class="play_area_overlay_text overlay_text">Waiting for players</span>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar">
+        <div class="users container"></div>
+    </div>
+    <div class="push"></div>
+</div>
+<div class="chat_wrapper">
+    <div class="chat">
+
+    </div>
+    <input class="chat_input" type="text"/>
+</div>
+{{ templates|safe }}
+
+{# I can haz needs to load before jquery #}
+<script src="/static/js/ICanHaz.min.js?v={{ version }}"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/static/js/jquery-1.9.0.min.js"><\/script>')</script>
+<script src="/static/js/jquery-ui-1.10.0.custom.min.js?v={{ version }}"></script>
+
+<script src="http://autobahn.s3.amazonaws.com/js/autobahn.min.js"></script>
+<script src="/static/js/init.js?v={{ version }}"></script>
+<script src="/static/js/event_handlers.js?v={{ version }}"></script>
+<script src="/static/js/cah.js?v={{ version }}"></script>
+
+</body>
+</html>

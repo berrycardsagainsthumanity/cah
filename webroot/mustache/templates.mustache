@@ -1,0 +1,74 @@
+<script id="t_users" type="text/html">
+    <ul>
+        {{#users}}
+                <li class="user {{czar}}
+                {{#unplayed}} unplayed{{/unplayed}}
+                {{#afk}} afk{{/afk}}
+                {{#round_winner}} round_winner{{/round_winner}}">
+                    <span class="kick_user" username="{{username}}">X</span>
+                    <span class="score">{{score}}</span>
+                    {{username}}
+                    {{#czar}}- Czar{{/czar}}
+                    {{#afk}}- AFK {{/afk}}
+                </li>
+        {{/users}}
+        {{^users}}
+            No users :(
+        {{/users}}
+    </ul>
+</script>
+
+<script id="t_white_cards" type="text/html">
+    {{#white_cards}}
+        {{>t_white_card}}
+    {{/white_cards}}
+</script>
+
+<script id="t_play_area_judge" type="text/html">
+    {{#cards}}
+        <div class="card_group card_group_{{num_cards}}cards" group_id="{{group_id}}">
+            {{>t_white_cards}}
+			<div style="container"></div>
+        </div>
+    {{/cards}}
+</script>
+
+<script id="t_white_card" type="text/html">
+    <div class="card white_card" card_id="{{card_id}}">
+        {{text}}
+    </div>
+</script>
+
+<script id="t_black_card" type="text/html">
+    <div class="card black_card" card_id="{{id}}">
+        {{text}}
+        <span class="num_white_cards_{{num_white_cards}}">{{num_white_cards}}</span>
+    </div>
+</script>
+
+<script id="t_timer" type="text/html">
+    <div class="timer">
+        <button type="button" class="restart_timer">Restart Timer (once)</button>
+        <span>
+            {{title}}
+        </span>
+        <span class="timer_duration">{{duration}}</span>
+    </div>
+</script>
+
+<script id="t_header" type="text/html">
+        <input placeholder="Username..." class="username"/>
+        <input class="login" type="submit" value="Join"/>
+        <button class="start {{#game_running}}hide{{/game_running}}">Start Game</button>
+        <input type="checkbox" class="notify" checked="true">Notify Sound</input>
+        <input class="afk_checkbox" type="checkbox" checked="{{afk}}">AFK</input>
+        <div class="size_slider"></div> Card Size
+        <div class="timers container"></div>
+</script>
+
+<script id="t_chat_msg" type="text/html">
+<div class="message {{#server}}server{{/server}}">
+    <span class="chat_user">{{username}}: </span>
+    <span class="chat_msg">{{message}}</span>
+    </div>
+</script>
