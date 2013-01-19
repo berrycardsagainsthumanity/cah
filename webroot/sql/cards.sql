@@ -1233,5 +1233,5 @@ CREATE TABLE "public"."admin" (
 )
 WITH (OIDS=FALSE)
 ;
-
+ALTER TABLE "public"."admin" ADD PRIMARY KEY ("id");
 GRANT SELECT ON ALL TABLES IN SCHEMA "public" TO "wwwdata";

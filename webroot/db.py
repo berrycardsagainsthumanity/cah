@@ -8,8 +8,7 @@ if database_host == '':
     database_host = 'localhost'
 
 engine = create_engine('postgresql://{host}/{db}'.format(
-
-    host=database_host,
+     host=database_host,
     db=database_name))
 
 Session = sessionmaker(bind=engine)
