@@ -29,7 +29,7 @@ def find(seq, f):
             return item
 
 
-class Game:
+class Game(object):
     def __init__(self):
         self._state = State()
         self._users = []
