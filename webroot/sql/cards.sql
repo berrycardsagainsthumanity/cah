@@ -1226,7 +1226,7 @@ ALTER TABLE "public"."cards" ADD UNIQUE ("text");
 -- ----------------------------
 ALTER TABLE "public"."cards" ADD PRIMARY KEY ("id");
 
-DROP TABLE "public"."admin";
+--DROP TABLE "public"."admin";
 CREATE TABLE "public"."admin" (
 "id" serial NOT NULL,
 "password" varchar(255) NOT NULL
