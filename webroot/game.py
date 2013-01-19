@@ -1,11 +1,16 @@
 from contextlib import closing
 import copy
-from itertools import cycle
-import json
+import logging
+from django.conf import settings
+import os
 import random
 from threading import Timer
 from webroot.db import Session
 from webroot.models import Cards, CardSets
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'webroot.settings'
+force_django_load = settings.LOGGING
+logger = logging.getLogger('cah.game')
 
 def get_card_ids(is_black_card):
     with closing(Session()) as s:
@@ -64,7 +69,7 @@ class Game(object):
 
             if len([u for u in self._users if not u.afk]) < 3:
                 self._cancel_round_timer()
-                self._state.step = "no_game"
+                self._set_step("no_game")
                 self.sync_me()
 
         except ValueError:
@@ -127,12 +132,12 @@ class Game(object):
             raise '[](/abno)'
 
         self._cancel_round_timer()
-        self._state.step = "judge_group"
+        self._set_step("judge_group")
         round_winner = self._get_user(session_id=group_id)
         round_winner.score += 1
         round_winner.round_winner = True
 
-        self._state.step = "round_winner"
+        self._set_step("round_winner")
         self._publish("round_winner", {
             "username": round_winner.username,
             "group_id": round_winner.session_id
@@ -145,13 +150,13 @@ class Game(object):
                                 self._state.black_card['text'],
                                 ' - White Card(s): ',
                                 ' '.join([c['text'] for c in
-                                         round_winner.white_cards_played])
+                                          round_winner.white_cards_played])
             ])
         })
 
         if round_winner.score >= self._state.winning_score:
             self._publish("winner", round_winner.username)
-            self._state.step = "no_game"
+            self._set_step("no_game")
             self.sync_me()
         else:
             self.sync_users()
@@ -193,7 +198,7 @@ class Game(object):
         self._publish("cancel_timer")
 
     def _start_round(self):
-        self._state.step = "start_round"
+        self._set_step("start_round")
         self._publish("start_round")
         for user in self._users:
             user.white_cards_played = []
@@ -286,12 +291,15 @@ class Game(object):
                         "white_cards": user.white_cards_played,
                         "num_cards": max_whites
                     })
-                self._state.step = "begin_judging"
+                self._set_step("begin_judging")
                 random.shuffle(cards)
                 self._publish("begin_judging", {"cards": cards})
                 self.sync_users()
                 self._start_round_timer(self._state.round_length)
 
+    def _set_step(self, step):
+        logger.info("Setting step to: {0}".format(step))
+        self._state.step = step
 
     def _get_user(self, username=None, session_id=None):
         if username:
@@ -301,6 +309,9 @@ class Game(object):
 
 
     def _publish(self, topic, data=None, exclude=None, eligible=None):
+        logger.info(
+            "Publishing: {0}, Data: {1}, exclude: {2}, eligible: {3}".format(
+                topic, data, exclude, eligible))
         if self._wamp_client:
             self._wamp_client.publish(publish.format(topic),
                 data, exclude=exclude, eligible=eligible)
@@ -324,7 +335,6 @@ class Game(object):
                     user.afk = True
                     user.czar = None
                     break
-
 
 
 class User(object):

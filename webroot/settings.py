@@ -1,7 +1,8 @@
 # Django settings for cah project.
 import socket
+import logging
 
-DEBUG = socket.gethostname() == "Cody"
+DEBUG = socket.gethostname() != "domU-12-31-39-06-B1-21"
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -134,7 +135,7 @@ INSTALLED_APPS = (
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -162,7 +163,7 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['console'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -171,5 +172,10 @@ LOGGING = {
             'propagate': True,
             'level': 'INFO'
         },
+        'cah':{
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'DEBUG'
+        }
     }
 }
