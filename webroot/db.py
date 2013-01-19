@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 database_name = 'cah'
 database_user = 'cah'
-database_password = 'BerryPunch'
+database_password = 'movetounversionedconfig'
 database_host = ''
 if database_host == '':
     database_host = 'localhost'
