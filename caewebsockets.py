@@ -39,7 +39,7 @@ class CahWampServer(WampServerProtocol):
 
     @exportRpc
     def kick_user(self, admin_pass, username):
-        if admin_pass == "MOVEMETODB":
+        if admin_pass == admin_password:
             game.remove_user(username)
 
     @exportRpc
