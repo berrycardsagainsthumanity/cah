@@ -1226,12 +1226,5 @@ ALTER TABLE "public"."cards" ADD UNIQUE ("text");
 -- ----------------------------
 ALTER TABLE "public"."cards" ADD PRIMARY KEY ("id");
 
---DROP TABLE "public"."admin";
-CREATE TABLE "public"."admin" (
-"id" serial NOT NULL,
-"password" varchar(255) NOT NULL
-)
-WITH (OIDS=FALSE)
-;
-ALTER TABLE "public"."admin" ADD PRIMARY KEY ("id");
+
 GRANT SELECT ON ALL TABLES IN SCHEMA "public" TO "wwwdata";
