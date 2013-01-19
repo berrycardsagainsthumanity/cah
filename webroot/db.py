@@ -3,15 +3,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 database_name = 'cah'
-database_user = 'cah'
-database_password = 'movetounversionedconfig'
 database_host = ''
 if database_host == '':
     database_host = 'localhost'
 
-engine = create_engine('postgresql://{user}:{password}@{host}/{db}'.format(
-    user=database_user,
-    password=database_password,
+engine = create_engine('postgresql://{host}/{db}'.format(
+
     host=database_host,
     db=database_name))
 

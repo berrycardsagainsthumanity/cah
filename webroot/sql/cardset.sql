@@ -41,6 +41,7 @@ INSERT INTO "public"."cardset" VALUES ('5', 'Canadian', 'f', 'f', 'CAN');
 INSERT INTO "public"."cardset" VALUES ('6', '/r/MLPlounge', 't', 'f', 'MLP');
 INSERT INTO "public"."cardset" VALUES ('7', 'BerryTube', 't', 'f', 'BT');
 INSERT INTO "public"."cardset" VALUES ('8', '2012 Holiday Pack', 'f', 'f', 'XMAS');
+INSERT INTO "public"."cardset" VALUES ('99', 'Marmdrunk', 't', 'f', 'MARM');
 
 -- ----------------------------
 -- Alter Sequences Owned By 

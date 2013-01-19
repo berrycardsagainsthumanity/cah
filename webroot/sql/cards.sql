@@ -1205,6 +1205,13 @@ INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES (
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('I did not use "h4x", I legitimately ________!', '7', null, null, 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Put _____ in the air.', '7', null, null, 't');
 
+
+
+
+INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Vodak ranting about Jews.', '99', null, null, 'f');
+INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Fuck you I''m drunk.', '99', null, null, 'f');
+INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('/sb CUTIE MARK AQUISITION PROGRAM', '99', null, null, 'f');
+
 -- ----------------------------
 -- Alter Sequences Owned By 
 -- ----------------------------
@@ -1219,4 +1226,12 @@ ALTER TABLE "public"."cards" ADD UNIQUE ("text");
 -- ----------------------------
 ALTER TABLE "public"."cards" ADD PRIMARY KEY ("id");
 
-GRANT SELECT ON ALL TABLES IN SCHEMA "public" TO "cah";
+DROP TABLE "public"."admin";
+CREATE TABLE "public"."admin" (
+"id" serial NOT NULL,
+"password" varchar(255) NOT NULL
+)
+WITH (OIDS=FALSE)
+;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA "public" TO "wwwdata";

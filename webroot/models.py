@@ -6,6 +6,7 @@ meta = MetaData(bind=engine)
 
 cards = Table('cards', meta, autoload=True)
 cardset = Table('cardset', meta, autoload=True)
+admin = Table('admin', meta, autoload=True)
 
 class Cards(object):
     pass
@@ -17,3 +18,9 @@ class CardSets(object):
     pass
 
 mapper(CardSets, cardset)
+
+
+class Admin(object):
+    pass
+
+mapper(Admin, admin)

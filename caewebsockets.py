@@ -1,9 +1,14 @@
+from contextlib import closing
 from twisted.internet import reactor
 from autobahn.wamp import WampServerFactory, WampServerProtocol, exportRpc, WampClientFactory, WampClientProtocol
 from autobahn.websocket import listenWS, connectWS
+from webroot.db import Session
 
 from webroot.game import Game
+from webroot.models import Admin
+
 game = Game()
+admin_password = ''
 
 class CahWampServer(WampServerProtocol):
     def __init__(self):
@@ -51,13 +56,20 @@ class CahWampServer(WampServerProtocol):
 
     def connectionLost(self, reason):
         game.remove_user(self._username)
-        super(self, reason)
+        try:
+            super(self, reason)
+        except:
+            pass
 
 class CahWampClient(WampClientProtocol):
     def onConnect(self, connectionResponse):
         game.register_client(self)
 
+
 if __name__ == '__main__':
+    with closing(Session()) as s:
+        admin_password = s.query(Admin.password).scalar()
+
     server = "ws://localhost:9000"
     factory = WampServerFactory(server)
     factory.protocol = CahWampServer
