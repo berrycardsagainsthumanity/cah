@@ -8,8 +8,6 @@ from threading import Timer
 from webroot.db import Session
 from webroot.models import Cards, CardSets
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'webroot.settings'
-force_django_load = settings.LOGGING
 logger = logging.getLogger('cah.game')
 
 def get_card_ids(is_black_card):
@@ -46,6 +44,8 @@ class Game(object):
 
     @staticmethod
     def register_cah_wamp_client(client):
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'webroot.settings'
+        force_django_load = settings.LOGGING
         Game._wamp_client = client
 
     def add_user(self, username, session):
