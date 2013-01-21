@@ -113,6 +113,7 @@ cah.start = function () {
                     }
                     else {
                         $login.hide();
+                        $('.username').hide();
                         cah.username = username;
                     }
                 }, onError);
