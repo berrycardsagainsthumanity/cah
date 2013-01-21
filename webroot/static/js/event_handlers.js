@@ -3,7 +3,6 @@ cah.eventHandlers = (function () {
     var window_focused = true;
     var notify_interval = null;
     var window_title = "Cards against humanity";
-    var notify_title = "Your turn!";
 
     var max_card_height = 160;
     var max_card_width = 125;
@@ -38,6 +37,10 @@ cah.eventHandlers = (function () {
         }, 50);
 
     };
+    var detectName = function (nick,msg){
+        return msg.match(new RegExp("(^|[^a-zA-Z0-9_])" + nick +
+            "([^a-zA-Z0-9_]|$)", 'i')) ? true : false;
+    };
 
     $(window).focus(function () {
         window_focused = true;
@@ -49,14 +52,16 @@ cah.eventHandlers = (function () {
         clear_notify_interval();
     });
 
-    var notify = function () {
+    var notify = function (notify_when_focused, notify_title) {
         if ($('.afk_checkbox').prop("checked")) {
             return;
         }
-        if ($('.notify').is(':checked')) {
+
+        if ((!window_focused || notify_when_focused) && $('.notify').is(':checked')) {
             notify_sound.play();
         }
         if (!window_focused) {
+            clear_notify_interval();
             notify_interval = setInterval(function () {
                 if (document.title == window_title)
                     document.title = notify_title;
@@ -68,7 +73,7 @@ cah.eventHandlers = (function () {
 
     return {
         sync_users:function (topic, users) {
-            var $users = $('.users').html(ich.t_users(users));
+            $('.users').html(ich.t_users(users));
             if (cah.admin_pass) {
                 $('.kick_user').css("display", "inline");
             }
@@ -101,7 +106,7 @@ cah.eventHandlers = (function () {
                 cah.restarted_timer = false;
             }
             else {
-                notify();
+                notify(true, "Your Turn!");
             }
         },
         max_whites:function () {
@@ -111,7 +116,7 @@ cah.eventHandlers = (function () {
         begin_judging:function (topic, cards) {
             $('.play_area_whites').html(ich.t_play_area_judge(cards));
             if (cah.czar == true) {
-                notify();
+                notify(true, "Your Turn!");
                 $('.play_area_overlay').hide();
                 $('.hand_overlay_text').text('Judge the white cards!');
                 $('.play_area_whites .card_group').one("dblclick",
@@ -224,6 +229,13 @@ cah.eventHandlers = (function () {
             }
         },
         chat_message:function (topic, data) {
+            if(!data.server &&
+                cah.username &&
+                data.username != cah.username &&
+                detectName(cah.username,data.message)){
+                data.highlight = true;
+                notify(false, "New Message!");
+            }
             $(ich.t_chat_msg(data)).appendTo('.chat');
             var chat = $('.chat').get(0);
             var scrollHeight = Math.max(chat.scrollHeight, chat.clientHeight);
