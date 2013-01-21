@@ -13,6 +13,6 @@ def index(request, hash=None):
 
     template_args = {
         "templates": ''.join(filesContents),
-        "version": "0.11"
+        "version": "0.12"
     }
     return render(request, 'index.html', template_args)
