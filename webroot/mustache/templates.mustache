@@ -61,7 +61,7 @@
         <input class="login" type="submit" value="Join"/>
         <button class="start {{#game_running}}hide{{/game_running}}">Start Game</button>
         <input type="checkbox" class="notify" checked="true">Notify Sound</input>
-        <input class="afk_checkbox" type="checkbox" checked="{{afk}}">AFK</input>
+        <input class="afk_checkbox" type="checkbox" {{#afk}}checked="{{afk}}"{{/afk}}>AFK</input>
         <div class="size_slider"></div> Card Size
         <button class="rooms_button">Rooms</button>
         <div class="timers container"></div>

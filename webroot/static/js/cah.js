@@ -153,7 +153,10 @@ cah.start = function () {
     });
 
     $header.on('change', '.afk_checkbox', function () {
-        cah.emit("update_afk", $(this).is(':checked'));
+        var afk = false;
+        if($(this).is(':checked'))
+            afk = true;
+        cah.emit("update_afk", afk);
     });
 
     $(".hand").on('dblclick', ".white_card", function (ev) {

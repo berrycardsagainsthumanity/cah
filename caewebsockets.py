@@ -47,7 +47,11 @@ class CahWampServer(WampServerProtocol):
             self._game.remove_user(username)
 
     @exportRpc
-    def update_afk(self, afk):
+    def update_afk(self, afk = None):
+        if afk:
+            afk = True
+        else:
+            afk = False
         self._game.update_afk(self._username, afk)
 
     @exportRpc
