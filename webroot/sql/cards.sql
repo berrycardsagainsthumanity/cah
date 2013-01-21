@@ -975,7 +975,7 @@ INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES (
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Big Mac sleeps soundly whenever ____ is with him.', '6', '0', '1', 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('____ has won the national Equestrian award for ____.', '6', '0', '2', 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('____ is best pony.', '6', '0', '1', 't');
-INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('____ should ____ ____.', '6', '2', '3', 't');
+INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('____ should ____ ____.', '6', '2', '1', 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('____? That''s future Spike''s problem.', '6', '0', '1', 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('After a wild night of crusading, Applebloom learned that ____ was her super special talent.', '6', '0', '1', 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('After a wild night of partying, Fluttershy awakens to find ____ in her bed.', '6', '0', '1', 't');
@@ -987,7 +987,7 @@ INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES (
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Dear Princess Celestia, Today I learned about ____. ', '6', '0', '1', 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Despite everypony''s expectations, Sweetie Belle''s cutie mark ended up being ____.', '6', '0', '1', 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Equestrian researchers have discovered that ____ is The 7th Element of Harmony.', '6', '0', '1', 't');
-INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Every Morning, Princess Celestia Rises ____.', '6', '0', '1', 't');
+INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Every morning, Princess Celestia raises ____.', '6', '0', '1', 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('In a stroke of unparalleled evil, Discord turned ____ into ____.', '6', '0', '2', 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('In a world without humans, saddles are actually made for ____.', '6', '0', '1', 't');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Inexplicably, the only thing the parasprites wouldn''t eat was ____.', '6', '0', '1', 't');
@@ -1211,6 +1211,8 @@ INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES (
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Vodak ranting about Jews.', '99', null, null, 'f');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Fuck you I''m drunk.', '99', null, null, 'f');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('/sb CUTIE MARK AQUISITION PROGRAM', '99', null, null, 'f');
+INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('A Mexican being deported.', '99', null, null, 'f');
+INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Knob cheese.', '99', null, null, 'f');
 
 -- ----------------------------
 -- Alter Sequences Owned By 

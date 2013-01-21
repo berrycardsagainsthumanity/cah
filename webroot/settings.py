@@ -6,19 +6,20 @@ DEBUG = socket.gethostname() != "domU-12-31-39-06-B1-21"
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+# ('Your Name', 'your_email@example.com'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',
+        # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': '', # Or path to database file if using sqlite3.
+        'USER': '', # Not used with sqlite3.
+        'PASSWORD': '', # Not used with sqlite3.
+        'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '', # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -73,19 +74,19 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     ['/NotWork/cah/webroot/static/']
-)
+    )
 
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
-)
+    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    )
 
 MUSTACHE_DIRS = (
     ['/NotWork/cah/webroot/mustache/']
-)
+    )
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '=(&amp;pal-k6^!*iww7#5558(1e5f3d0yv)y4&amp;v^h(a5%$z6q0k#2'
@@ -94,8 +95,8 @@ SECRET_KEY = '=(&amp;pal-k6^!*iww7#5558(1e5f3d0yv)y4&amp;v^h(a5%$z6q0k#2'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
+    #     'django.template.loaders.eggs.Loader',
+    )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -105,7 +106,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+    )
 
 ROOT_URLCONF = 'webroot.urls'
 
@@ -126,7 +127,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'webroot.www',
-)
+    )
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -167,15 +168,26 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'sqlalchemy.engine':{
+        'sqlalchemy.engine': {
             'handlers': ['console'],
             'propagate': True,
             'level': 'INFO'
         },
-        'cah':{
+        'cah': {
             'handlers': ['console'],
             'propagate': True,
             'level': 'DEBUG'
-        }
+        },
+        'twisted': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'DEBUG'
+        },
+        'autobahn': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'DEBUG'
+        },
+
     }
 }

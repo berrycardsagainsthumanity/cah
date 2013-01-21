@@ -25,7 +25,8 @@ def get_card_ids(is_black_card):
 
 white_card_ids = get_card_ids(False)
 black_card_ids = get_card_ids(True)
-publish = "http://example.com/cahevent#{0}"
+
+publish = "http://example.com/{0}#{1}"
 
 def find(seq, f):
     """Return first item in sequence where f(item) == True."""
@@ -35,16 +36,23 @@ def find(seq, f):
 
 
 class Game(object):
-    def __init__(self):
+    def __init__(self, game_id, empty_game_callback):
         self._state = State()
-        self._users = []
-        self._wamp_client = None
+        self.users = []
+        self.game_id = game_id
+        self._empty_game_callback = empty_game_callback
 
-    def add_user(self, username, session_id):
+    _wamp_client = None
+
+    @staticmethod
+    def register_cah_wamp_client(client):
+        Game._wamp_client = client
+
+    def add_user(self, username, session):
         if self._get_user(username):
             return False
 
-        self._users.append(User(username, session_id))
+        self.users.append(User(username, session))
         self.sync_users()
         return True
 
@@ -63,23 +71,25 @@ class Game(object):
                         self._set_next_czar()
                 except:
                     pass
-                self._users.remove(user)
+                self.users.remove(user)
             else:
-                self._users.remove(user)
+                self.users.remove(user)
 
-            if len([u for u in self._users if not u.afk]) < 3:
+            if len([u for u in self.users if not u.afk]) < 3:
                 self._cancel_round_timer()
                 self._set_step("no_game")
                 self.sync_me()
 
         except ValueError:
             pass
+        if len(self.users) == 0:
+            self._empty_game_callback(self.game_id)
         self.sync_users()
 
     def sync_users(self):
         users = []
         black_card = self._state.black_card
-        for user in self._users:
+        for user in self.users:
             if self._state.step == "start_round" and user.is_unplayed(
                 black_card['num_white_cards']):
                 user.unplayed = True
@@ -89,18 +99,15 @@ class Game(object):
 
         self._publish("sync_users", {"users": [x.to_dict() for x in users]})
 
-    def register_client(self, wamp_client):
-        self._wamp_client = wamp_client
-
     def start_game(self):
-        if len([u for u in self._users if not u.afk]) < 3:
+        if len([u for u in self.users if not u.afk]) < 3:
             return "Can't start a game with less than 3 users"
         try:
             self._state.round_timer.cancel()
         except:
             pass
         self._state = State()
-        for user in self._users:
+        for user in self.users:
             user.reset()
         self._start_round()
 
@@ -114,7 +121,7 @@ class Game(object):
 
         if whites_played == max_whites:
             self._publish("max_whites",
-                eligible=[self._get_user(username).session_id])
+                eligible=[self._get_user(username).session])
 
         card = [x for x in user.hand if x['card_id'] == card_id][0]
         user.hand = [x for x in user.hand if x['card_id'] != card_id]
@@ -123,7 +130,7 @@ class Game(object):
 
         self.sync_users()
         self._publish("white_chosen",
-            exclude=[self._get_user(username).session_id])
+            exclude=[self._get_user(username).session])
         self._update_round()
 
     def judge_group(self, username, group_id):
@@ -140,7 +147,7 @@ class Game(object):
         self._set_step("round_winner")
         self._publish("round_winner", {
             "username": round_winner.username,
-            "group_id": round_winner.session_id
+            "group_id": round_winner.session.session_id
         })
         self._publish("chat_message", {
             "username": "Winner",
@@ -180,6 +187,9 @@ class Game(object):
     def restart_timer(self):
         self._start_round_timer(self._state.round_length)
 
+    def get_users(self):
+        return self.users
+
     def _start_round_timer(self, duration):
         self._cancel_round_timer()
         self._publish("show_timer", {
@@ -200,7 +210,7 @@ class Game(object):
     def _start_round(self):
         self._set_step("start_round")
         self._publish("start_round")
-        for user in self._users:
+        for user in self.users:
             user.white_cards_played = []
             user.round_winner = False
             if user.playing_round is None:
@@ -214,19 +224,19 @@ class Game(object):
         self._publish("czar_chosen", czar.username)
         self.sync_users()
 
-        for i, user in enumerate(self._users):
+        for i, user in enumerate(self.users):
             num_cards = len(user.hand)
             cards = self._get_white_cards(10 - num_cards)
             if len(cards) > 0:
                 user.hand.extend(cards)
                 self._publish("send_hand",
                     {"white_cards": user.hand},
-                    eligible=[user.session_id])
+                    eligible=[user.session])
         self._start_round_timer(self._state.round_length)
 
     def _set_next_czar(self):
         set_czar = False
-        users = [u for u in self._users if u.afk == False]
+        users = [u for u in self.users if u.afk == False]
         for i in range(0, len(users) + 1):
             user = users[(i + 1) % len(users)]
             if user.czar:
@@ -274,7 +284,7 @@ class Game(object):
         if self._state.step == "start_round":
             players_outstanding = False
             max_whites = self._state.black_card['num_white_cards']
-            for user in self._users:
+            for user in self.users:
                 if user.czar or user.afk or not user.playing_round:
                     continue
                 if len(user.white_cards_played) != max_whites:
@@ -283,11 +293,11 @@ class Game(object):
             if not players_outstanding:
                 self._cancel_round_timer()
                 cards = []
-                for user in self._users:
+                for user in self.users:
                     if user.czar or user.afk:
                         continue
                     cards.append({
-                        "group_id": user.session_id,
+                        "group_id": user.session.session_id,
                         "white_cards": user.white_cards_played,
                         "num_cards": max_whites
                     })
@@ -303,24 +313,27 @@ class Game(object):
 
     def _get_user(self, username=None, session_id=None):
         if username:
-            return find(self._users, lambda u: u.username == username)
+            return find(self.users, lambda u: u.username == username)
         if session_id:
-            return find(self._users, lambda u: u.session_id == session_id)
+            return find(self.users, lambda u: u.session.session_id == session_id)
 
 
     def _publish(self, topic, data=None, exclude=None, eligible=None):
+        if not exclude:
+            exclude = []
+        topic = publish.format(self.game_id, topic)
         logger.info(
             "Publishing: {0}, Data: {1}, exclude: {2}, eligible: {3}".format(
                 topic, data, exclude, eligible))
-        if self._wamp_client:
-            self._wamp_client.publish(publish.format(topic),
+        if Game._wamp_client:
+            Game._wamp_client.dispatch(topic,
                 data, exclude=exclude, eligible=eligible)
 
 
     def _force_round_end(self, set_afk=True):
         if self._state.step == "start_round":
             max_whites = self._state.black_card['num_white_cards']
-            for user in self._users:
+            for user in self.users:
                 if user.czar or user.afk or not user.playing_round:
                     continue
                 if len(user.white_cards_played) != max_whites:
@@ -329,7 +342,7 @@ class Game(object):
                     user.white_cards_played = []
             self._update_round()
         elif self._state.step == "begin_judging":
-            for user in self._users:
+            for user in self.users:
                 if user.czar:
                     self._start_round()
                     user.afk = True
@@ -338,9 +351,8 @@ class Game(object):
 
 
 class User(object):
-    def __init__(self, username, session_id):
+    def __init__(self, username, session):
         self.username = username
-        self.session_id = session_id
         self.white_cards_played = []
         self.hand = []
         self.czar = ''
@@ -350,11 +362,12 @@ class User(object):
         self.afk = False
         self.unplayed = False
         self.round_winner = False
+        self.session = session
 
     def to_dict(self):
         return {
             "username": self.username,
-            "session_id": self.session_id,
+            "session_id": self.session.session_id,
             "czar": self.czar,
             "score": self.score,
             "afk": self.afk,

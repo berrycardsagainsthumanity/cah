@@ -1,6 +1,5 @@
 import os
-from django.conf import settings
-from django.http import HttpResponseRedirect
+from webroot.roomsmanager import get_smallest_game_id
 from webroot.settings import MUSTACHE_DIRS
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods

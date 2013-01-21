@@ -1,4 +1,5 @@
 var cah = {
     debug:true,
-    CHATLIST: []
+    CHATLIST: [],
+    subscribed_topics: []
 };

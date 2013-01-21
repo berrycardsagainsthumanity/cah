@@ -28,7 +28,7 @@
     {{#cards}}
         <div class="card_group card_group_{{num_cards}}cards" group_id="{{group_id}}">
             {{>t_white_cards}}
-			<div style="container"></div>
+            <div style="container"></div>
         </div>
     {{/cards}}
 </script>
@@ -63,6 +63,7 @@
         <input type="checkbox" class="notify" checked="true">Notify Sound</input>
         <input class="afk_checkbox" type="checkbox" checked="{{afk}}">AFK</input>
         <div class="size_slider"></div> Card Size
+        <button class="rooms_button">Rooms</button>
         <div class="timers container"></div>
 </script>
 
@@ -71,4 +72,17 @@
     <span class="chat_user">{{username}}: </span>
     <span class="chat_msg">{{message}}</span>
     </div>
+</script>
+
+<script id="t_rooms" type="text/html">
+<div class="rooms">
+    {{#rooms}}
+        <div class="room">
+        Users: {{#users}}{{username}} {{/users}}
+        <button class="join_game" game_id="{{game_id}}">Join Game</button>
+        </div>
+    {{/rooms}}
+    <button class="create_room">Create</button>
+    <button class="close_rooms">Close</button>
+</div>
 </script>

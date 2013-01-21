@@ -1,10 +1,10 @@
 // WAMP session object
 var sess;
 var wsuri = "ws://" + window.location.hostname + ":9000";
-var wamp_rpc_namespace = "http://example.com/cah#";
-var wamp_event_namespace = "http://example.com/cahevent#";
+var wamp_prefix = "http://example.com/";
 
 $(document).ready(function () {
+
     cah.start();
     load_bpm_resize();
 });
@@ -13,61 +13,83 @@ cah.start = function () {
     var logWrapper = function (func, name) {
         return function () {
 
-            console.log('Function: ', name)
+            console.log('Function: ', name);
             $.each(arguments, function (i, arg) {
                 console.log(arg);
             });
             return func.apply(this, arguments);
         }
+    };
+
+    cah.emit = function (topic, arg1, arg2) {
+        topic = [wamp_prefix, cah.game_id, "_rpc#", topic].join('');
+        if (cah.debug) {
+            console.log("Emit: " + topic);
+            $.each(arguments, function (i, arg) {
+                console.log(arg);
+            });
+        }
+        if (arg2)
+            return sess.call(topic, arg1, arg2);
+        else if (arg1)
+            return sess.call(topic, arg1);
+        else
+            return sess.call(topic);
+    };
+
+    cah.publish = function (topic, data) {
+        topic = [wamp_prefix, cah.game_id, "#", topic].join('');
+        if (cah.debug) {
+            console.log("Publish: " + topic);
+            $.each(arguments, function (i, arg) {
+                console.log(arg);
+            });
+        }
+        return sess.publish(topic, data);
+    };
+
+    cah.join_game = function (game_id) {
+        sess.call(wamp_prefix + "#join_game", game_id)
+            .then(function (result) {
+                cah.game_id = result;
+                cah.subscribe_to_game()
+            }, onError);
     }
+
+    cah.handle_connect = function (session) {
+        if (session) {
+            sess = session;
+        }
+        console.log("Connected to " + wsuri);
+        cah.join_game(0);
+    };
+
+    cah.subscribe_to_game = function () {
+        $.each(cah.subscribed_topics, function (index, topic) {
+            try {
+                sess.unsubscribe(topic);
+            }
+            catch (ex) {
+            }
+        });
+
+        // subscribe to topic, providing an event handler
+        $.each(cah.eventHandlers, function (name, func) {
+            if (cah.debug) {
+                func = logWrapper(func, name);
+            }
+            topic = [wamp_prefix, cah.game_id, "#", name].join('');
+            cah.subscribed_topics.push(topic);
+            sess.subscribe(topic, func);
+        });
+        cah.emit("sync_me").then(function () {
+        }, onError)
+    };
 
     // connect to WAMP server
     ab.connect(wsuri,
         // WAMP session was established
-        function (session) {
-
-            sess = session;
-            console.log("Connected to " + wsuri);
-
-            // subscribe to topic, providing an event handler
-            $.each(cah.eventHandlers, function (name, func) {
-                if (cah.debug) {
-                    func = logWrapper(func, name);
-                }
-                sess.subscribe(wamp_event_namespace + name, func);
-            });
-
-            cah.emit = function (topic, arg1, arg2) {
-                topic = wamp_rpc_namespace + topic;
-                if (cah.debug) {
-                    console.log("Emit: " + topic);
-                    $.each(arguments, function (i, arg) {
-                        console.log(arg);
-                    });
-                }
-                if (arg2)
-                    return sess.call(topic, arg1, arg2);
-                else if (arg1)
-                    return sess.call(topic, arg1);
-                else
-                    return sess.call(topic);
-            };
-
-            cah.publish = function (topic, data) {
-                topic = wamp_event_namespace + topic;
-                if (cah.debug) {
-                    console.log("Publish: " + topic);
-                    $.each(arguments, function (i, arg) {
-                        console.log(arg);
-                    });
-                }
-                return sess.publish(topic, data);
-            }
-
-            cah.emit("sync_me");
-
-        },
-
+        cah.handle_connect,
         // WAMP session is gone
         function (code, reason) {
             sess = null;
@@ -76,25 +98,28 @@ cah.start = function () {
 
     );
 
-    $('.header').on('click', '.login', function () {
+    var $header = $(".header");
+
+    $header.on('click', '.login', function () {
         var username = $('.username').val();
         if (username.length > 0) {
             $(this).attr('disabled', '');
-            cah.emit("join", username, sess.sessionid())
+            cah.emit("join", username)
                 .then(function (result) {
+                    var $login = $('.login');
                     if (result === false) {
-                        $('.login').removeAttr('disabled');
+                        $login.removeAttr('disabled');
                         alert('Name already taken.');
                     }
                     else {
-                        $('.login').hide();
+                        $login.hide();
                         cah.username = username;
                     }
                 }, onError);
         }
     });
 
-    $(".header").on('click', '.start', function () {
+    $header.on('click', '.start', function () {
         cah.emit("start_game")
             .then(function (result) {
                 if (result) {
@@ -103,7 +128,31 @@ cah.start = function () {
             });
     });
 
-    $(".header").on('change', '.afk_checkbox', function () {
+    $header.on('click', '.rooms_button', function () {
+        cah.emit('get_rooms')
+            .then(function (rooms) {
+                $('.rooms').remove();
+                $(ich.t_rooms(rooms)).appendTo('.wrapper');
+                $('.join_game').click(function () {
+                    $this = $(this);
+                    game_id = $this.attr('game_id');
+                    cah.join_game(+game_id);
+                    $('.rooms').remove();
+                });
+                $('.create_room').click(function () {
+                    cah.emit('create_game').then(function (game_id) {
+                        cah.join_game(game_id);
+                        $('.rooms').remove();
+
+                    });
+                });
+                $('.close_rooms').click(function () {
+                    $('.rooms').remove();
+                });
+            }, onError);
+    });
+
+    $header.on('change', '.afk_checkbox', function () {
         cah.emit("update_afk", $(this).is(':checked'));
     });
 
@@ -120,7 +169,7 @@ cah.start = function () {
     });
 
     $('.chat_input').keydown(function (event) {
-        if (!cah.username) return;
+        //if (!cah.username) return;
         var $this = $(this);
         if (event.keyCode == 9) {  //tab pressed
             event.preventDefault(); // stops its action
@@ -145,7 +194,7 @@ cah.start = function () {
 
     });
 
-    $(".users").on('dblclick', ".kick_user", function (ev) {
+    $(".users").on('dblclick', ".kick_user", function () {
         cah.emit("kick_user", cah.admin_pass, $(this).attr("username"));
     });
 
@@ -153,7 +202,7 @@ cah.start = function () {
         cah.admin_pass = password;
         cah.emit("sync_me");
     }
-}
+};
 
 function onError(error, desc) {
     console.log("error: ", error, ", desc:", desc);
@@ -180,8 +229,8 @@ function tabComplete(elem) {
 
         var re = new RegExp('^' + who + '.*', 'i');
         var ret = []
-        for (var i in cah.CHATLIST) {
-            var m = cah.CHATLIST[i].match(re);
+        for (var j in cah.CHATLIST) {
+            var m = cah.CHATLIST[j].match(re);
             if (m) ret.push(m[0]);
         }
 
@@ -195,9 +244,9 @@ function tabComplete(elem) {
             elem.val(x);
         }
         if (ret.length > 1) {
-            var ts = [];
-            for (var i in ret) {
-                var x = chat.replace(endword, ret[i]);
+            ts = [];
+            for (var k in ret) {
+                var x = chat.replace(endword, ret[k]);
                 if (chat.match(onlyword)) {
                     x += ": "
                 } else {
@@ -214,8 +263,8 @@ function tabComplete(elem) {
 
     if (hasTS == true) {
         console.log("Cycle");
-        var ts = elem.data('tabcycle');
-        var i = elem.data('tabindex');
+        ts = elem.data('tabcycle');
+        i = elem.data('tabindex');
         elem.val(ts[i]);
         if (++i >= ts.length) i = 0;
         elem.data('tabindex', i);
@@ -232,17 +281,17 @@ var load_bpm_resize = function () {
 
     var mutationHandler = function (mutations) {
         for (var i = 0; i < mutations.length; ++i) {
-            console.log('mutations: ', mutations, mutations[i].addedNodes && mutations[i].addedNodes.length);
+            // console.log('mutations: ', mutations, mutations[i].addedNodes && mutations[i].addedNodes.length);
             if (mutations[i].addedNodes && mutations[i].addedNodes.length) {
                 var addedNodes = $(mutations[i].addedNodes);
-                console.log(addedNodes);
+                //console.log(addedNodes);
                 var emotes = addedNodes.find('.bpm-emote');
                 emotes.each(function (i, emote) {
                     var $emote = $(emote);
                     if ($emote.parent().is('.bpm-wrapper')) return;
                     if ($emote.length > 0) {
                         if ($emote.height() > 150) {
-                            console.log("resizing bpm emote");
+                            //console.log("resizing bpm emote");
                             var scale = 150 / $emote.height();
                             var innerwrap = $emote.wrap('<div class="bpm-wrapper"><div class="bpm-wrapper"></div></div>').parent();
                             var outerwrap = innerwrap.parent();
@@ -265,6 +314,6 @@ var load_bpm_resize = function () {
     observer.observe($chat.get(0), {
         childList:true
     });
-}
+};
 
 
