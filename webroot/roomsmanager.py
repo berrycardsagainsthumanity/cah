@@ -27,4 +27,5 @@ def get_or_create_room(game_id):
     return game
 
 def on_empty_game(game_id):
-    del rooms[game_id]
+    if game_id > 0:
+        del rooms[game_id]
