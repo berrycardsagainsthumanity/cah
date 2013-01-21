@@ -1333,7 +1333,7 @@ INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES (
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Droopums.', '9', null, null, 'f');
 
 
-INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Vodak ranting about Jews.', '99', null, null, 'f');
+INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Vodaks ranting about Jews.', '99', null, null, 'f');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('Fuck you I''m drunk.', '99', null, null, 'f');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('/sb CUTIE MARK AQUISITION PROGRAM', '99', null, null, 'f');
 INSERT INTO "public"."cards" (text, cardset, draw, pick, is_black_card) VALUES ('A Mexican being deported.', '99', null, null, 'f');
