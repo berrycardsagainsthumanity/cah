@@ -1,0 +1,8 @@
+# Administrator password
+admin_password: asdf
+
+# Websocket configuration
+websocket_domain: localhost:9000
+
+# Web server configuration
+server_domain: localhost:8000

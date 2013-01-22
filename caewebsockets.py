@@ -1,16 +1,16 @@
-from contextlib import closing
 import sys
+
+import yaml
 from twisted.internet import reactor
+from twisted.python import log
 from autobahn.wamp import WampServerFactory, WampServerProtocol, exportRpc, WampClientFactory, WampClientProtocol
 from autobahn.websocket import listenWS, connectWS
-from twisted.python import log
-from webroot.db import Session
-from webroot.game import Game
 
-from webroot.models import Admin
+from webroot.game import Game
 from webroot.roomsmanager import rooms, get_smallest_game_id, create_new_game, get_or_create_room
 
-admin_password = ''
+with open("config.yml") as f:
+    config = yaml.load(f)
 
 class CahWampServer(WampServerProtocol):
     def __init__(self):
@@ -43,7 +43,7 @@ class CahWampServer(WampServerProtocol):
 
     @exportRpc
     def kick_user(self, admin_pass, username):
-        if admin_pass == admin_password:
+        if admin_pass == config['admin_password']:
             self._game.remove_user(username)
 
     @exportRpc
@@ -79,18 +79,27 @@ class CahWampServer(WampServerProtocol):
         elif self._game:
             self._game.remove_user(self._username)
         self._game_id = game_id
-        prefix = 'http://example.com/{0}{1}#'
-        self.registerForRpc(self, prefix.format(game_id, '_rpc'))
-        self.registerForPubSub(prefix.format(game_id, ''), True)
+        prefix = 'http://{}/{}{}#'
+        self.registerForRpc(self, prefix.format(
+            config['server_domain'],
+            game_id,
+            '_rpc',
+        ))
+        self.registerForPubSub(prefix.format(
+            config['server_domain'],
+            game_id,
+            '',
+        ), True)
         self._game = get_or_create_room(game_id)
         if self._username:
             self.join(self._username)
         return game_id
 
     def onSessionOpen(self):
-        self.registerProcedureForRpc("http://example.com/#join_game",
+        self.registerProcedureForRpc("http://{}/#join_game".format(config['server_domain']),
             self.join_game)
-        self.registerProcedureForRpc("http://example.com/#join_game",
+        # TODO: Why is this line here?
+        self.registerProcedureForRpc("http://{}/#join_game".format(config['server_domain']),
             self.join_game)
 
     def connectionLost(self, reason):
@@ -103,10 +112,8 @@ class CahWampServer(WampServerProtocol):
 
 
 if __name__ == '__main__':
-    with closing(Session()) as s:
-        admin_password = s.query(Admin.password).scalar()
     log.startLogging(sys.stdout)
-    server = "ws://localhost:9000"
+    server = "ws://{}".format(config['websocket_domain'])
     factory = WampServerFactory(server, debug=False, debugWamp=True)
     factory.protocol = CahWampServer
     Game.register_cah_wamp_client(factory)
@@ -115,4 +122,3 @@ if __name__ == '__main__':
         reactor.run()
     except:
         pass
-

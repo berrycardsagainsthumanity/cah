@@ -7,6 +7,7 @@ import random
 from threading import Timer
 from webroot.db import Session
 from webroot.models import Cards, CardSets
+import yaml
 
 logger = logging.getLogger('cah.game')
 
@@ -20,11 +21,14 @@ def get_card_ids(is_black_card):
             .all()
             )
         return [x[0] for x in card_ids]
+ABS_PATH = os.path.dirname(os.path.realpath(__file__))
 
 white_card_ids = get_card_ids(False)
 black_card_ids = get_card_ids(True)
+with open(os.path.join(ABS_PATH, "..", "config.yml")) as f:
+    config = yaml.load(f)
 
-publish = "http://example.com/{0}#{1}"
+publish = "http://{}/{}#{}"
 
 def find(seq, f):
     """Return first item in sequence where f(item) == True."""
@@ -321,7 +325,7 @@ class Game(object):
     def _publish(self, topic, data=None, exclude=None, eligible=None):
         if not exclude:
             exclude = []
-        topic = publish.format(self.game_id, topic)
+        topic = publish.format(config['server_domain'], self.game_id, topic)
         logger.info(
             "Publishing: {0}, Data: {1}, exclude: {2}, eligible: {3}".format(
                 topic, data, exclude, eligible))

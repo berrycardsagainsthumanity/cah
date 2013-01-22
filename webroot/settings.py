@@ -1,6 +1,13 @@
 # Django settings for cah project.
+import os
+import django
 import socket
 import logging
+
+# calculated paths for django and the site
+# used as starting points for various other paths
+DJANGO_ROOT = os.path.dirname(os.path.realpath(django.__file__))
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 DEBUG = socket.gethostname() != "domU-12-31-39-06-B1-21"
 TEMPLATE_DEBUG = DEBUG
@@ -62,7 +69,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/NotWork/cah/webroot/staticroot/'
+STATIC_ROOT = os.path.join(SITE_ROOT, 'staticroot/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -73,7 +80,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    ['/NotWork/cah/webroot/static/']
+    [os.path.join(SITE_ROOT, 'static')]
     )
 
 # List of finder classes that know how to find static files in
@@ -85,7 +92,7 @@ STATICFILES_FINDERS = (
     )
 
 MUSTACHE_DIRS = (
-    ['/NotWork/cah/webroot/mustache/']
+    [os.path.join(SITE_ROOT, 'mustache/')]
     )
 
 # Make this unique, and don't share it with anybody.
@@ -113,7 +120,7 @@ ROOT_URLCONF = 'webroot.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'webroot.wsgi.application'
 
-TEMPLATE_DIRS = ('/NotWork/cah/webroot/templates',)
+TEMPLATE_DIRS = (os.path.join(SITE_ROOT, 'templates/'),)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
