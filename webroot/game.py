@@ -165,16 +165,21 @@ class Game(object):
             "username": round_winner.username,
             "group_id": round_winner.session.session_id
         })
+
+        if "{}" in self._state.black_card['text']:
+            final_card_message = self._state.black_card['text'].format(
+                *(c['text'].rstrip('.') for c in round_winner.white_cards_played)
+                )
+        else:
+            final_card_message = ' '.join([
+                self._state.black_card['text'],
+                round_winner.white_cards_played[0]['text'],
+                ])
+
         self._publish("chat_message", {
             "username": "Winner",
             "server": True,
-            "message": ''.join([round_winner.username,
-                                ' won - Black Card: ',
-                                self._state.black_card['text'],
-                                ' - White Card(s): ',
-                                ' '.join([c['text'] for c in
-                                          round_winner.white_cards_played])
-            ])
+            "message": ''.join([round_winner.username, ' won - "', final_card_message, '"'])
         })
 
         if round_winner.score >= self._state.winning_score:

@@ -91,6 +91,7 @@ cah.eventHandlers = (function () {
             $('.hand').html(ich.t_white_cards(cards));
         },
         add_black:function (topic, card) {
+            card.text = card.text.replace(/{}/g, '____');
             $(ich.t_black_card(card)).appendTo('.play_area_black');
         },
         white_chosen:function () {
