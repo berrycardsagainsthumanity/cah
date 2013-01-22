@@ -1,0 +1,50 @@
+- 
+  name: First Edition
+  active: true
+  base: true
+  tag: 1ED
+-
+  name: Second Edition
+  active: true
+  base: true
+  tag: 2ED
+- 
+  name: The First Expansion
+  active: true
+  base: false
+  tag: X1
+- 
+  name: The Second Expansion
+  active: true
+  base: false
+  tag: X2
+- 
+  name: Canadian
+  active: false
+  base: false
+  tag: CAN
+- 
+  name: /r/MLPLounge
+  active: true
+  base: false
+  tag: MLP
+- 
+  name: BerryTube
+  active: true
+  base: false
+  tag: BT
+- 
+  name: 2012 Holiday Pack
+  active: false
+  base: false
+  tag: XMAS
+- 
+  name: Marmdrunk
+  active: true
+  base: false
+  tag: MARM
+- 
+  name: VerySerious
+  active: true
+  base: false
+  tag: VS

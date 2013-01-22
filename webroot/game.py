@@ -1,30 +1,15 @@
-from contextlib import closing
-import copy
-import logging
-from django.conf import settings
 import os
 import random
 from threading import Timer
-from webroot.db import Session
-from webroot.models import Cards, CardSets
+import copy
+import logging
+from django.conf import settings
 import yaml
 
 logger = logging.getLogger('cah.game')
 
-def get_card_ids(is_black_card):
-    with closing(Session()) as s:
-        card_ids = (
-            s.query(Cards.id)
-            .join(CardSets, CardSets.id == Cards.cardset)
-            .filter(CardSets.active == True)
-            .filter(Cards.is_black_card == is_black_card)
-            .all()
-            )
-        return [x[0] for x in card_ids]
 ABS_PATH = os.path.dirname(os.path.realpath(__file__))
 
-white_card_ids = get_card_ids(False)
-black_card_ids = get_card_ids(True)
 with open(os.path.join(ABS_PATH, "..", "config.yml")) as f:
     config = yaml.load(f)
 
@@ -36,13 +21,17 @@ def find(seq, f):
         if f(item):
             return item
 
-
 class Game(object):
     def __init__(self, game_id, empty_game_callback):
-        self._state = State()
         self.users = []
         self.game_id = game_id
         self._empty_game_callback = empty_game_callback
+
+        self._black_cards = None
+        self._white_cards = None
+        self.refresh_cards()
+
+        self._state = State(self._black_cards, self._white_cards)
 
     _wamp_client = None
 
@@ -51,6 +40,29 @@ class Game(object):
         os.environ['DJANGO_SETTINGS_MODULE'] = 'webroot.settings'
         force_django_load = settings.LOGGING
         Game._wamp_client = client
+
+    def refresh_cards(self):
+        with open(os.path.join(ABS_PATH, "data/cardsets.yml")) as f:
+            all_cardsets = yaml.load(f)
+        # TODO: on room creation, allow this list to be edited
+        current_sets = [s['tag'] for s in all_cardsets if s['active']]
+
+        def filter_cards(from_cards):
+            to_cards = []
+            for (s, newcards) in ((s, from_cards.get(s, [])) for s in current_sets):
+                for c in newcards:
+                    to_cards.append({"tag": s, "text": c})
+            for (id, c) in enumerate(to_cards):
+                c['card_id'] = id
+            return to_cards
+
+        with open(os.path.join(ABS_PATH, "data/black_cards.yml")) as f:
+            self._black_cards = filter_cards(yaml.load(f))
+        for c in self._black_cards:
+            c['num_white_cards'] = max(1, c['text'].count("{}"))
+
+        with open(os.path.join(ABS_PATH, "data/white_cards.yml")) as f:
+            self._white_cards = filter_cards(yaml.load(f))
 
     def add_user(self, username, session):
         if self._get_user(username):
@@ -110,7 +122,7 @@ class Game(object):
             self._state.round_timer.cancel()
         except:
             pass
-        self._state = State()
+        self._state = State(self._black_cards, self._white_cards)
         for user in self.users:
             user.reset()
         self._start_round()
@@ -254,34 +266,24 @@ class Game(object):
             return users[0]
 
     def _get_white_cards(self, num_cards):
-        cards = []
-        for _ in range(0, num_cards):
-            card = random.choice(self._state.available_white_cards)
-            cards.append(card)
+        # If the deck is about to run out, draw up the rest of the deck and reshuffle
+        rest_draw = []
+        if num_cards > len(self._state.available_white_cards):
+            rest_draw = self._state.available_white_cards
+            num_cards -= len(self._state.available_white_cards)
+            self._state.available_white_cards = copy.deepcopy(self._white_cards)
+
+        # This is not robust if the game is configured with very large hands or very few white cards
+        cards = random.sample(self._state.available_white_cards, num_cards)
+        for card in cards:
             self._state.available_white_cards.remove(card)
-            if len(self._state.available_white_cards) <= 0:
-                self._state.available_white_cards = copy.deepcopy(
-                    white_card_ids)
-        with closing(Session()) as s:
-            white_cards = (s.query(Cards)
-                           .filter(Cards.id.in_(cards))
-                           .all())
-        return [{
-                    "text": card.text,
-                    "card_id": card.id
-                } for card in white_cards]
+        cards.extend(rest_draw)
+        return cards
 
     def _get_black_card(self):
-        with closing(Session()) as s:
-            card = random.choice(self._state.available_black_cards)
-            self._state.available_black_cards.remove(card)
-            with closing(Session()) as s:
-                black_card = (s.query(Cards)
-                              .filter(Cards.id == card)
-                              .first())
-        return {"text": black_card.text,
-                "card_id": black_card.id,
-                "num_white_cards": 1 if not black_card.pick else black_card.pick}
+        card = random.choice(self._state.available_black_cards)
+        self._state.available_black_cards.remove(card)
+        return card
 
     def _update_round(self):
         # Playing white cards, see if round should go to judging
@@ -399,10 +401,10 @@ class User(object):
 
 
 class State(object):
-    def __init__(self):
+    def __init__(self, black_cards, white_cards):
         self.step = "no_game"
-        self.available_white_cards = copy.deepcopy(white_card_ids)
-        self.available_black_cards = copy.deepcopy(black_card_ids)
+        self.available_white_cards = copy.deepcopy(white_cards)
+        self.available_black_cards = copy.deepcopy(black_cards)
         self.winning_score = 6
         self.round_length = 90
         self.black_card = None
