@@ -226,7 +226,7 @@ BT:
   - "{} WAT R U DOIN? {} STAHP!"
   - "{} Is my hangover cure."
   - "{}, not to be trusted."
-  - /r {}.
+  - /request {}.
   - /rcv We here at BerryTube do not condone {}.
   - /sb I have so much {} inside me you don't know what I could do!
   - Another temp user requesting {}.

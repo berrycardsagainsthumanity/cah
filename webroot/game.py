@@ -31,16 +31,17 @@ class Game(object):
         self._white_cards = None
         self.refresh_cards()
 
-        self._state = State(self._black_cards, self._white_cards)
+        self._state = State()
 
-    _wamp_client = None
+    _wamp_server = None
 
     @staticmethod
     def register_cah_wamp_client(client):
         os.environ['DJANGO_SETTINGS_MODULE'] = 'webroot.settings'
         force_django_load = settings.LOGGING
-        Game._wamp_client = client
+        Game._wamp_server = client
 
+    # TODO: This shouldn't hit disk during unit tests, probably move this out into a separate file cardmanager or something
     def refresh_cards(self):
         with open(os.path.join(ABS_PATH, "data/cardsets.yml")) as f:
             all_cardsets = yaml.load(f)
@@ -343,8 +344,8 @@ class Game(object):
         logger.info(
             "Publishing: {0}, Data: {1}, exclude: {2}, eligible: {3}".format(
                 topic, data, exclude, eligible))
-        if Game._wamp_client:
-            Game._wamp_client.dispatch(topic,
+        if Game._wamp_server:
+            Game._wamp_server.dispatch(topic,
                 data, exclude=exclude, eligible=eligible)
 
 
@@ -413,10 +414,12 @@ class User(object):
 
 
 class State(object):
-    def __init__(self, black_cards, white_cards):
+    def __init__(self, black_cards = None, white_cards = None):
         self.step = "no_game"
-        self.available_white_cards = copy.deepcopy(white_cards)
-        self.available_black_cards = copy.deepcopy(black_cards)
+        if white_cards:
+            self.available_white_cards = copy.deepcopy(white_cards)
+        if black_cards:
+            self.available_black_cards = copy.deepcopy(black_cards)
         self.winning_score = 6
         self.round_length = 90
         self.black_card = None

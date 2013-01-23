@@ -3,8 +3,8 @@ import sys
 import yaml
 from twisted.internet import reactor
 from twisted.python import log
-from autobahn.wamp import WampServerFactory, WampServerProtocol, exportRpc, WampClientFactory, WampClientProtocol
-from autobahn.websocket import listenWS, connectWS
+from autobahn.wamp import WampServerFactory, WampServerProtocol, exportRpc
+from autobahn.websocket import listenWS
 
 from webroot.game import Game
 from webroot.roomsmanager import rooms, get_smallest_game_id, create_new_game, get_or_create_room
