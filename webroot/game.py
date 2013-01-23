@@ -245,9 +245,14 @@ class Game(object):
         self._publish("czar_chosen", czar.username)
         self.sync_users()
 
+        if black_card['num_white_cards'] >= 3:
+            extra_cards = black_card['num_white_cards'] - 1
+        else:
+            extra_cards = 0
+
         for i, user in enumerate(self.users):
             num_cards = len(user.hand)
-            cards = self._get_white_cards(10 - num_cards)
+            cards = self._get_white_cards(10 + extra_cards - num_cards)
             if len(cards) > 0:
                 user.hand.extend(cards)
                 self._publish("send_hand",
