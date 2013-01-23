@@ -1,3 +1,6 @@
+# 1ED, 2ED, X1, X2, CAN, XMAS content (C) Cards Against Humanity, LLC
+# Used with permission under CC BY-NC-SA 2.0
+# http://creativecommons.org/licenses/by-nc-sa/2.0/
 1ED:
   - Who stole the cookies from the cookie jar?
   - I wish I hadn't lost the instruction manual for {}.
@@ -142,6 +145,16 @@ CAN:
   - In an attempt to reach a wider audience, the Royal Ontario Museum has opened an interactive exhibit on {}.
   - CTV presents {}, the story of {}.
   - What's the Canadian government using to inspire rural students to succeed?
+XMAS:
+  - This holiday season, Tim Allen must overcome his fear of {} to save Christmas.
+  - Jesus is {}.
+  - "On the third day of Christmas, my true love gave to me: three French hens, two turtle doves, and {}."
+  - Wake up, America. Christmas is under attack by secular liberals and their {}.
+  - Every Christmas, my uncle gets drunk and tells the story about {}.
+  - What keeps me warm during the cold, cold winter?
+  - After blacking out during New Year's Eve, I was awoken by {}.
+
+# Created by the /r/MLPLounge community
 MLP:
   - And that's how Equestria was made!
   - Big Mac sleeps soundly whenever {} is with him.
@@ -203,14 +216,8 @@ MLP:
   - Without any warning, Pinkie Pie burst into a song about {}.
   - You're a human transported to Equestria! The first thing you'd look for is {}.
   - Zecora is a well known supplier of {} and {}.
-XMAS:
-  - This holiday season, Tim Allen must overcome his fear of {} to save Christmas.
-  - Jesus is {}.
-  - "On the third day of Christmas, my true love gave to me: three French hens, two turtle doves, and {}."
-  - Wake up, America. Christmas is under attack by secular liberals and their {}.
-  - Every Christmas, my uncle gets drunk and tells the story about {}.
-  - What keeps me warm during the cold, cold winter?
-  - After blacking out during New Year's Eve, I was awoken by {}.
+
+# Created by the /r/mylittlealcoholic and berrytube.tv community
 BT:
   - "{} × {} OTP."
   - "{} can stop the Great and Powerful Trixie."
@@ -254,6 +261,8 @@ BT:
   - Braeburn is actually gay for {} .
   - I did not use "h4x", I legitimately {}!
   - Put {} in the air.
+
+# Created by the Very Serious community
 VS:
   - "{} Jesus is the Jesus of {}."
   - "{} ALL THE {}."
