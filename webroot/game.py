@@ -291,6 +291,8 @@ class Game(object):
         return cards
 
     def _get_black_card(self):
+        if len(self._state.available_black_cards) <= 0:
+            self._state.avalable_black_cards = copy.deepcopy(self._black_cards)
         card = random.choice(self._state.available_black_cards)
         self._state.available_black_cards.remove(card)
         return card
