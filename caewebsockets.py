@@ -1,3 +1,4 @@
+import os
 import sys
 
 import yaml
@@ -11,6 +12,7 @@ from webroot.roomsmanager import rooms, get_smallest_game_id, create_new_game, g
 
 with open("config.yml") as f:
     config = yaml.load(f)
+    config['admin_password'] = os.getenv('CAH_ADMIN_PASS', config['admin_password'])
 
 class CahWampServer(WampServerProtocol):
     def __init__(self):
