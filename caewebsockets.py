@@ -2,6 +2,7 @@ import os
 import sys
 
 import yaml
+from twisted.application import service
 from twisted.internet import reactor
 from twisted.python import log
 from autobahn.wamp import WampServerFactory, WampServerProtocol, exportRpc
@@ -75,6 +76,7 @@ class CahWampServer(WampServerProtocol):
         self.join_game(game.game_id)
         return game.game_id
 
+    @exportRpc
     def join_game(self, game_id):
         if game_id < 0:
             game_id = get_smallest_game_id()
@@ -112,7 +114,15 @@ class CahWampServer(WampServerProtocol):
         except:
             pass
 
-
+class CahWampService(service.Service):
+    def __init__(self, port, factory):
+        self.factory = factory
+    
+    def startService(self):
+        Game.register_cah_wamp_client(self.factory)
+        listenWS(self.factory)
+        log.msg('Started CAH Websocket server')
+    
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
     server = "ws://{}".format(config['websocket_domain'])

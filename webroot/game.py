@@ -4,7 +4,6 @@ import random
 from threading import Timer
 import copy
 import logging
-from django.conf import settings
 import yaml
 from webroot.utils import roundrobin
 
@@ -40,8 +39,6 @@ class Game(object):
 
     @staticmethod
     def register_cah_wamp_client(client):
-        os.environ['DJANGO_SETTINGS_MODULE'] = 'webroot.settings'
-        force_django_load = settings.LOGGING
         Game._wamp_server = client
 
     # TODO: This shouldn't hit disk during unit tests, probably move this out into a separate file cardmanager or something

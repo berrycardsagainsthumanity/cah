@@ -1,5 +1,5 @@
 cah.eventHandlers = (function () {
-    var notify_sound = new Audio("static/sounds/yay.wav");
+    var notify_sound = new Audio("/sounds/yay.wav");
     var window_focused = true;
     var notify_interval = null;
     var window_title = "Cards Against Equanity";
