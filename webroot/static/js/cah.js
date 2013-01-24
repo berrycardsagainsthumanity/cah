@@ -132,25 +132,32 @@ cah.start = function () {
     $header.on('click', '.rooms_button', function () {
         cah.emit('get_rooms')
             .then(function (rooms) {
-                $('.rooms').remove();
+                $('.dialog').remove();
                 $(ich.t_rooms(rooms)).appendTo('.wrapper');
                 $('.join_game').click(function () {
                     $this = $(this);
                     game_id = $this.attr('game_id');
                     cah.join_game(+game_id);
-                    $('.rooms').remove();
+                    $('.dialog').remove();
                 });
                 $('.create_room').click(function () {
                     cah.emit('create_game').then(function (game_id) {
                         cah.join_game(game_id);
-                        $('.rooms').remove();
+                        $('.dialog').remove();
 
                     });
                 });
-                $('.close_rooms').click(function () {
-                    $('.rooms').remove();
+                $('.close_dialog').click(function () {
+                    $('.dialog').remove();
                 });
             }, onError);
+    });
+
+    $header.on('click', '.about_button', function(){
+        $(ich.t_about()).appendTo('.wrapper');
+        $('.close_dialog').click(function () {
+            $('.dialog').remove();
+        });
     });
 
     $header.on('change', '.afk_checkbox', function () {

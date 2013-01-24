@@ -7,10 +7,10 @@ from webroot.game import Game
 
 
 class TestGame(unittest.TestCase):
-
     def black_card_factory(self, cards):
         def next_card():
             return cards.pop(0)
+
         return next_card
 
     def get_mocked_game(self, num_players, *black_cards):
@@ -46,6 +46,37 @@ class TestGame(unittest.TestCase):
             [{"card_id": 1, "text": "{}{}", "tag": "test", "num_white_cards": 2}])
         white_cards = self.get_hands(wamp_server)
         self.assertEqual(10 * num_players, sum([len(x) for x in white_cards.itervalues()]))
+
+    def assert_card_format(self, black_card_text, white_cards_text, expected):
+        game = Game(0, lambda a: None)
+        self.assertEqual(
+            expected,
+            game._get_round_winner_message(black_card_text, white_cards_text))
+
+    def test_card_formatting(self):
+        self.assert_card_format("Black?", ["white."],
+            [{"class": "black", "text": "Black?"}, {"class": "white", "text": " white."}])
+        self.assert_card_format("{} black.", ["white."],
+            [{"class": "white", "text": "white"}, {"class": "black", "text": " black."}])
+        self.assert_card_format("{} black.", ["Bees?"],
+            [{"class": "white", "text": "Bees?"}, {"class": "black", "text": " black."}])
+        self.assert_card_format("Black {}.", ["white."],
+            [{"class": "black", "text": "Black "},
+             {"class": "white", "text": "white."}])
+        self.assert_card_format("Black {} asdf {}.", ["white.", "white2."],
+            [{"class": "black", "text": "Black "},
+             {"class": "white", "text": "white"},
+             {"class": "black", "text": " asdf "},
+             {"class": "white", "text": "white2."}])
+        self.assert_card_format("{} asdf {}.", ["white.", "white2."],
+            [{"class": "white", "text": "white"},
+             {"class": "black", "text": " asdf "},
+             {"class": "white", "text": "white2."}])
+        self.assert_card_format("{} asdf {} fdsa.", ["white.", "white2."],
+            [{"class": "white", "text": "white"},
+             {"class": "black", "text": " asdf "},
+             {"class": "white", "text": "white2"},
+             {"class": "black", "text": " fdsa."}])
 
 
 class MockWampServer(object):

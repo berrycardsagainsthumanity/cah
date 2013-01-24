@@ -290,7 +290,7 @@ ul li {
     margin-left: 15px;
 }
 
-.rooms{
+.dialog{
     position: absolute;
     top: 50px;
     left: 50px;
@@ -298,6 +298,7 @@ ul li {
     background-color: white;
     padding: 15px;
     border-radius: 5px;
+    margin-right: 50px;
 }
 
 .room{
@@ -309,4 +310,17 @@ ul li {
 
 .highlight{
     background-color: #fcefa1;
+}
+
+.chat_msg .black{
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    padding-left: 2px;
+}
+
+.chat_msg .white{
+    color: black;
+    border-radius: 3px;
+
 }

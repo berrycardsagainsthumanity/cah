@@ -64,26 +64,55 @@
         <input class="afk_checkbox" type="checkbox" {{#afk}}checked="{{afk}}"{{/afk}}>AFK</input>
         <div class="size_slider"></div> Card Size
         <button class="rooms_button">Rooms</button>
-        <a href="/static/about.html">About...</a>
+        <button class="about_button">About...</button>
         <div class="timers container"></div>
 </script>
 
 <script id="t_chat_msg" type="text/html">
-<div class="message{{#server}} server{{/server}}{{#highlight}} highlight{{/highlight}}">
-    <span class="chat_user">{{username}}: </span>
-    <span class="chat_msg">{{message}}</span>
+    <div class="message{{#highlight}} highlight{{/highlight}}">
+        <span class="chat_user">{{username}}: </span>
+        <span class="chat_msg">{{message}}</span>
     </div>
 </script>
 
 <script id="t_rooms" type="text/html">
-<div class="rooms">
-    {{#rooms}}
-        <div class="room">
-        Users: {{#users}}{{username}} {{/users}}
-        <button class="join_game" game_id="{{game_id}}">Join Game</button>
-        </div>
-    {{/rooms}}
-    <button class="create_room">Create</button>
-    <button class="close_rooms">Close</button>
-</div>
+    <div class="dialog">
+        {{#rooms}}
+            <div class="room">
+            Users: {{#users}}{{username}} {{/users}}
+            <button class="join_game" game_id="{{game_id}}">Join Game</button>
+            </div>
+        {{/rooms}}
+        <button class="create_room">Create</button>
+        <button class="close_dialog">Close</button>
+    </div>
 </script>
+
+<script id="t_about" type="text/html">
+    <div class="dialog">
+        <p>
+            This is a web-based implementation of the Cards Against Humanity party game, originally created by <a
+                href="http://www.cardsagainsthumanity.com" target="_blank">Cards Against Humanity, LLC.</a> Content from the original Cards
+            Against Humanity is used by permission under the <a href="http://creativecommons.org/licenses/by-nc-sa/2.0/" target="_blank">Creative
+            Commons BY-NC-SA 2.0 license</a>.
+        </p>
+
+        <p>
+            <a href="https://github.com/berrycardsagainsthumanity/cah/" target="_blank">Would you like to see what's going on behind the
+                scenes?</a>
+        </p>
+        <button class="close_dialog">Close</button>
+    </dialog>
+</script>
+
+<script id="t_round_winner_message" type="text/html">
+    <div class="message server">
+        <span class="chat_msg">
+        Server: {{username}} won. -
+            {{#message_parts}}
+                <span class="{{class}}">{{text}}</span>
+            {{/message_parts}}
+        </span>
+    </div>
+</script>
+

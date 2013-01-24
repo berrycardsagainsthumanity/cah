@@ -2,7 +2,7 @@ cah.eventHandlers = (function () {
     var notify_sound = new Audio("static/sounds/yay.wav");
     var window_focused = true;
     var notify_interval = null;
-    var window_title = "Cards against ponydom";
+    var window_title = "Cards Against Equanity";
 
     var max_card_height = 160;
     var max_card_width = 125;
@@ -21,6 +21,17 @@ cah.eventHandlers = (function () {
             }
         }
     }
+
+    var append_to_chat = function(message){
+        $(message).appendTo('.chat');
+        var chat = $('.chat').get(0);
+        var scrollHeight = Math.max(chat.scrollHeight, chat.clientHeight);
+        chat.scrollTop = scrollHeight - chat.clientHeight;
+        var limit = 500;
+        while ($(chat).children().length > limit) {
+            $(chat).children().first().remove();
+        }
+    };
 
     var clear_notify_interval = function () {
         if (notify_interval) {
@@ -154,6 +165,8 @@ cah.eventHandlers = (function () {
             $('.card_group[group_id=' + data.group_id + ']')
                 .addClass('winning_group')
             $(".hand_overlay").show();
+
+            append_to_chat(ich.t_round_winner_message(data));
             cah.czar = false;
         },
         winner:function (topic, username) {
@@ -237,14 +250,7 @@ cah.eventHandlers = (function () {
                 data.highlight = true;
                 notify(false, "New Message!");
             }
-            $(ich.t_chat_msg(data)).appendTo('.chat');
-            var chat = $('.chat').get(0);
-            var scrollHeight = Math.max(chat.scrollHeight, chat.clientHeight);
-            chat.scrollTop = scrollHeight - chat.clientHeight;
-            var limit = 500;
-            while ($(chat).children().length > limit) {
-                $(chat).children().first().remove();
-            }
+            append_to_chat(ich.t_chat_msg(data));
         }
     }
 })();

@@ -1,3 +1,4 @@
+from itertools import cycle
 import os
 import random
 from threading import Timer
@@ -5,6 +6,7 @@ import copy
 import logging
 from django.conf import settings
 import yaml
+from webroot.utils import roundrobin
 
 logger = logging.getLogger('cah.game')
 
@@ -20,6 +22,7 @@ def find(seq, f):
     for item in seq:
         if f(item):
             return item
+
 
 class Game(object):
     def __init__(self, game_id, empty_game_callback):
@@ -45,7 +48,7 @@ class Game(object):
     def refresh_cards(self):
         with open(os.path.join(ABS_PATH, "data/cardsets.yml")) as f:
             all_cardsets = yaml.load(f)
-        # TODO: on room creation, allow this list to be edited
+            # TODO: on room creation, allow this list to be edited
         current_sets = [s['tag'] for s in all_cardsets if s['active']]
 
         def filter_cards(from_cards):
@@ -162,25 +165,15 @@ class Game(object):
         round_winner.round_winner = True
 
         self._set_step("round_winner")
+
+        black_text = self._state.black_card['text'];
+        white_cards_text = [x['text'] for x in round_winner.white_cards_played]
+
+        message =  self._get_round_winner_message(black_text, white_cards_text)
         self._publish("round_winner", {
             "username": round_winner.username,
-            "group_id": round_winner.session.session_id
-        })
-
-        if "{}" in self._state.black_card['text']:
-            final_card_message = self._state.black_card['text'].format(
-                *(c['text'].rstrip('.') for c in round_winner.white_cards_played)
-                )
-        else:
-            final_card_message = ' '.join([
-                self._state.black_card['text'],
-                round_winner.white_cards_played[0]['text'],
-                ])
-
-        self._publish("chat_message", {
-            "username": "Winner",
-            "server": True,
-            "message": ''.join([round_winner.username, ' won - "', final_card_message, '"'])
+            "group_id": round_winner.session.session_id,
+            "message_parts": message
         })
 
         if round_winner.score >= self._state.winning_score:
@@ -229,6 +222,31 @@ class Game(object):
             pass
         self._publish("cancel_timer")
 
+    def _get_round_winner_message(self, black_text, white_cards_text):
+        def format_cards(cards_iter, class_iter):
+            message_parts = list(cards_iter)
+            if message_parts[-1] == '.':
+                message_parts = message_parts[:-1]
+            last = len(message_parts) - 1
+            return [{
+                        "class": class_iter.next(),
+                        "text": x.rstrip('.') if i < last else x
+                    } for i, x in enumerate(message_parts)]
+
+        if not "{}" in black_text:
+            css_class = cycle(["black", "white"])
+            white_cards_text[0] = ' ' + white_cards_text[0]
+            return format_cards(roundrobin([black_text], white_cards_text), css_class)
+        elif black_text.startswith("{}"):
+            black_parts = black_text.split("{}")
+            black_parts.pop(0)
+            css_class = cycle(["white", "black"])
+            return format_cards(roundrobin(white_cards_text, black_parts), css_class)
+        else:
+            black_parts = black_text.split("{}")
+            css_class = cycle(["black", "white"])
+            return format_cards(roundrobin(black_parts, white_cards_text), css_class)
+
     def _start_round(self):
         self._set_step("start_round")
         self._publish("start_round")
@@ -262,19 +280,23 @@ class Game(object):
         self._start_round_timer(self._state.round_length)
 
     def _set_next_czar(self):
-        set_czar = False
-        users = [u for u in self.users if u.afk == False]
-        for i in range(0, len(users) + 1):
-            user = users[(i + 1) % len(users)]
-            if user.czar:
-                user.czar = None
-                set_czar = True
-            elif set_czar:
-                user.czar = 'czar'
-                return user
-        if not set_czar:
-            users[0].czar = 'czar'
-            return users[0]
+        try:
+            set_czar = False
+            users = [u for u in self.users if u.afk == False]
+            for i in range(0, len(users) + 1):
+                user = users[(i + 1) % len(users)]
+                if user.czar:
+                    user.czar = None
+                    set_czar = True
+                elif set_czar:
+                    user.czar = 'czar'
+                    return user
+            if not set_czar:
+                users[0].czar = 'czar'
+                return users[0]
+        except:
+            if len(users > 0):
+                users[0].czar = 'czar'
 
     def _get_white_cards(self, num_cards):
         # If the deck is about to run out, draw up the rest of the deck and reshuffle
@@ -414,7 +436,7 @@ class User(object):
 
 
 class State(object):
-    def __init__(self, black_cards = None, white_cards = None):
+    def __init__(self, black_cards=None, white_cards=None):
         self.step = "no_game"
         if white_cards:
             self.available_white_cards = copy.deepcopy(white_cards)
