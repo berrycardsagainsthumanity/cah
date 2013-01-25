@@ -2,7 +2,7 @@ cah.eventHandlers = (function () {
     var notify_sound = new Audio("/sounds/yay.wav");
     var window_focused = true;
     var notify_interval = null;
-    var window_title = "Cards Against Equanity";
+    var window_title = "Cards Against Equinity";
 
     var max_card_height = 160;
     var max_card_width = 125;
