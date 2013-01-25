@@ -33,12 +33,14 @@ fileResource = static.File(os.path.join(WEBROOT_DIR, "static"))
 
 # This is the ugly bit--we need to construct a resource tree to get our templated .js in here
 jsResource = static.File(os.path.join(WEBROOT_DIR, "static", "js"))
-with open(os.path.join(WEBROOT_DIR, "static", "js", "init.template")) as f:
+with open(os.path.join(WEBROOT_DIR, "static", "js", "init.mustache")) as f:
     jsResource.putChild(
         'init.js',
         static.Data(pystache.render(f.read(), config).encode('utf-8'), "application/javascript"),
         )
 fileResource.putChild('js', jsResource)
+
+fileResource.indexNames=['index.mustache']
 
 fileServer = server.Site(fileResource)
 internet.TCPServer(config['server_port'], fileServer).setServiceParent(cahService)

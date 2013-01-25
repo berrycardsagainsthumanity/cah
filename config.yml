@@ -7,4 +7,4 @@ websocket_port: 9000
 
 # Web server configuration
 server_domain: localhost
-server_port: 8000
+server_port: 8765
