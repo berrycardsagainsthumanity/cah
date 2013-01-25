@@ -3,16 +3,13 @@ import os
 import random
 from threading import Timer
 import copy
-import logging
+
 import yaml
+from twisted.python import log
+
 from webroot.utils import roundrobin
 
-logger = logging.getLogger('cah.game')
-
 ABS_PATH = os.path.dirname(os.path.realpath(__file__))
-
-with open(os.path.join(ABS_PATH, "..", "config.yml")) as f:
-    config = yaml.load(f)
 
 publish = "http://{}/{}#{}"
 
@@ -40,6 +37,12 @@ class Game(object):
     @staticmethod
     def register_cah_wamp_client(client):
         Game._wamp_server = client
+
+    _publish_uri = ""
+
+    @staticmethod
+    def set_publish_uri(publish_uri):
+        Game._publish_uri = publish_uri
 
     # TODO: This shouldn't hit disk during unit tests, probably move this out into a separate file cardmanager or something
     def refresh_cards(self):
@@ -346,7 +349,7 @@ class Game(object):
                 self._start_round_timer(self._state.round_length)
 
     def _set_step(self, step):
-        logger.info("Setting step to: {0}".format(step))
+        log.msg("Setting step to: {0}".format(step))
         self._state.step = step
 
     def _get_user(self, username=None, session_id=None):
@@ -359,8 +362,9 @@ class Game(object):
     def _publish(self, topic, data=None, exclude=None, eligible=None):
         if not exclude:
             exclude = []
-        topic = publish.format(config['server_domain'], self.game_id, topic)
-        logger.info(
+        log.msg("URI: {}".format(Game._publish_uri))
+        topic = publish.format(Game._publish_uri, self.game_id, topic)
+        log.msg(
             "Publishing: {0}, Data: {1}, exclude: {2}, eligible: {3}".format(
                 topic, data, exclude, eligible))
         if Game._wamp_server:

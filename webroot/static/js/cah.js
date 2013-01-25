@@ -1,7 +1,7 @@
 // WAMP session object
 var sess;
-var wsuri = "ws://" + window.location.hostname + ":9000";
-var wamp_prefix = "http://localhost:8000/";
+var wsuri = cah.wsuri;
+var wamp_prefix = cah.wamp_prefix;
 
 $(document).ready(function () {
 

@@ -83,14 +83,16 @@ class CahWampServer(WampServerProtocol):
         elif self._game:
             self._game.remove_user(self._username)
         self._game_id = game_id
-        prefix = 'http://{}/{}{}#'
+        prefix = 'http://{}:{}/{}{}#'
         self.registerForRpc(self, prefix.format(
             config['server_domain'],
+            config['server_port'],
             game_id,
             '_rpc',
         ))
         self.registerForPubSub(prefix.format(
             config['server_domain'],
+            config['server_port'],
             game_id,
             '',
         ), True)
@@ -100,10 +102,7 @@ class CahWampServer(WampServerProtocol):
         return game_id
 
     def onSessionOpen(self):
-        self.registerProcedureForRpc("http://{}/#join_game".format(config['server_domain']),
-            self.join_game)
-        # TODO: Why is this line here?
-        self.registerProcedureForRpc("http://{}/#join_game".format(config['server_domain']),
+        self.registerProcedureForRpc("http://{server_domain}:{server_port}/#join_game".format(**config),
             self.join_game)
 
     def connectionLost(self, reason):
@@ -115,22 +114,14 @@ class CahWampServer(WampServerProtocol):
             pass
 
 class CahWampService(service.Service):
-    def __init__(self, port, factory):
+    def __init__(self, server, port, topicuri, factory):
+        self.server = server
+        self.port = port
+        self.topicuri = topicuri
         self.factory = factory
     
     def startService(self):
         Game.register_cah_wamp_client(self.factory)
+        Game.set_publish_uri(self.topicuri)
         listenWS(self.factory)
         log.msg('Started CAH Websocket server')
-    
-if __name__ == '__main__':
-    log.startLogging(sys.stdout)
-    server = "ws://{}".format(config['websocket_domain'])
-    factory = WampServerFactory(server, debug=False, debugWamp=True)
-    factory.protocol = CahWampServer
-    Game.register_cah_wamp_client(factory)
-    listenWS(factory)
-    try:
-        reactor.run()
-    except:
-        pass

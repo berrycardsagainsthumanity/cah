@@ -3,10 +3,13 @@ import os
 import yaml
 
 from twisted.application import internet, service
-from twisted.web import static, server
+from twisted.web import static, server, resource
 from autobahn.wamp import WampServerFactory
 
+import pystache
 from caewebsockets import CahWampServer, CahWampService
+
+WEBROOT_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "webroot")
 
 with open("config.yml") as f:
     config = yaml.load(f)
@@ -14,13 +17,32 @@ with open("config.yml") as f:
 
 cahService = service.MultiService()
 
-serverURI = "ws://{}".format(config['websocket_domain'])
+## Set up the websocket server
+serverURI = "ws://{websocket_domain}:{websocket_port}".format(**config)
 cahWampFactory = WampServerFactory(serverURI, debug=False, debugWamp=True)
 cahWampFactory.protocol = CahWampServer
-CahWampService(9000, cahWampFactory).setServiceParent(cahService)
+CahWampService(
+    config['websocket_domain'],
+    config['websocket_port'],
+    "{server_domain}:{server_port}".format(**config),
+    cahWampFactory,
+    ).setServiceParent(cahService)
 
-fileServer = server.Site(static.File(os.path.join(os.path.dirname(os.path.realpath(__file__)), "webroot", "static")))
-internet.TCPServer(8000, fileServer).setServiceParent(cahService)
+## Set up the web server
+fileResource = static.File(os.path.join(WEBROOT_DIR, "static"))
 
+# This is the ugly bit--we need to construct a resource tree to get our templated .js in here
+jsResource = static.File(os.path.join(WEBROOT_DIR, "static", "js"))
+with open(os.path.join(WEBROOT_DIR, "static", "js", "init.template")) as f:
+    jsResource.putChild(
+        'init.js',
+        static.Data(pystache.render(f.read(), config).encode('utf-8'), "application/javascript"),
+        )
+fileResource.putChild('js', jsResource)
+
+fileServer = server.Site(fileResource)
+internet.TCPServer(config['server_port'], fileServer).setServiceParent(cahService)
+
+## Define the application
 application = service.Application("CAH")
 cahService.setServiceParent(application)
