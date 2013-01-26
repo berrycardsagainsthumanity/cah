@@ -301,7 +301,7 @@ class Game(object):
     def _get_white_cards(self, num_cards):
         # If the deck is about to run out, draw up the rest of the deck and reshuffle
         rest_draw = []
-        if num_cards > len(self._state.available_white_cards):
+        if num_cards >= len(self._state.available_white_cards):
             rest_draw = self._state.available_white_cards
             num_cards -= len(self._state.available_white_cards)
             self._state.available_white_cards = copy.deepcopy(self._white_cards)
