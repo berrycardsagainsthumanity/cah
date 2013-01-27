@@ -270,13 +270,14 @@ class Game(object):
             extra_cards = 0
 
         for i, user in enumerate(self.users):
-            num_cards = len(user.hand)
-            cards = self._get_white_cards(10 + extra_cards - num_cards)
-            if len(cards) > 0:
-                user.hand.extend(cards)
-                self._publish("send_hand",
-                    {"white_cards": user.hand},
-                    eligible=[user.session])
+            if not user.czar and not user.afk:
+                num_cards = len(user.hand)
+                cards = self._get_white_cards(10 + extra_cards - num_cards)
+                if len(cards) > 0:
+                    user.hand.extend(cards)
+                    self._publish("send_hand",
+                        {"white_cards": user.hand},
+                        eligible=[user.session])
         self._start_round_timer(self._state.round_length)
 
     def _set_next_czar(self):
