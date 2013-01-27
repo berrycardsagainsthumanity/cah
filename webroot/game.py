@@ -298,6 +298,11 @@ class Game(object):
         except:
             if len(users > 0):
                 users[0].czar = 'czar'
+        finally:
+            for user in self.users:
+                if user.afk:
+                    user.czar = None
+
 
     def _get_white_cards(self, num_cards):
         # If the deck is about to run out, draw up the rest of the deck and reshuffle
