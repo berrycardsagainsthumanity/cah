@@ -168,6 +168,8 @@ html, body {
 
 .hand_container {
     position: relative;
+	min-width: 50vw;
+	min-height: 20vh;
 }
 
 .afk {
