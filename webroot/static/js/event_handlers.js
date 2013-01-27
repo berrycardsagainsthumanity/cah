@@ -131,7 +131,7 @@ cah.eventHandlers = (function () {
                 notify(true, "Your Turn!");
                 $('.play_area_overlay').hide();
                 $('.hand_overlay_text').text('Judge the white cards!');
-                $('.play_area_whites .card_group').one("dblclick",
+                $('.play_area_whites .card_group').one("doubletap",
                     function () {
                         $('.play_area_overlay').show();
                         $('.play_area_overlay_text').text(' ');

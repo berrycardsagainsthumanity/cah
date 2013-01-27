@@ -3,6 +3,7 @@ var sess;
 var wsuri = cah.wsuri;
 var wamp_prefix = cah.wamp_prefix;
 
+
 $(document).ready(function () {
 
     cah.start();
@@ -167,7 +168,7 @@ cah.start = function () {
         cah.emit("update_afk", afk);
     });
 
-    $(".hand").on('dblclick', ".white_card", function (ev) {
+    $(".hand").on('doubletap', ".white_card", function (ev) {
         if (cah.max_whites) {
             ev.preventDefault();
             return;
@@ -205,7 +206,7 @@ cah.start = function () {
 
     });
 
-    $(".users").on('dblclick', ".kick_user", function () {
+    $(".users").on('doubletap', ".kick_user", function () {
         cah.emit("kick_user", cah.admin_pass, $(this).attr("username"));
     });
 
