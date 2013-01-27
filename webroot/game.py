@@ -7,7 +7,7 @@ import copy
 import yaml
 from twisted.python import log
 
-from webroot.utils import roundrobin
+from webroot.utils import roundrobin, frozendict
 
 ABS_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -64,9 +64,11 @@ class Game(object):
             self._black_cards = filter_cards(yaml.load(f))
         for c in self._black_cards:
             c['num_white_cards'] = max(1, c['text'].count("{}"))
+        self._black_cards = map(frozendict, self._black_cards)
 
         with open(os.path.join(ABS_PATH, "data/white_cards.yml")) as f:
             self._white_cards = filter_cards(yaml.load(f))
+        self._white_cards = map(frozendict, self._white_cards)
 
     def add_user(self, username, session):
         if self._get_user(username):
@@ -310,19 +312,22 @@ class Game(object):
         if num_cards >= len(self._state.available_white_cards):
             rest_draw = self._state.available_white_cards
             num_cards -= len(self._state.available_white_cards)
-            self._state.available_white_cards = copy.deepcopy(self._white_cards)
+            self._state.available_white_cards = set(copy.deepcopy(self._white_cards))
+            # Remove cards currently accounted for elsewhere
+            self._state.available_white_cards -= rest_draw
+            for user in self.users:
+                self._state.available_white_cards -= set(user.hand)
 
         # This is not robust if the game is configured with very large hands or very few white cards
         cards = random.sample(self._state.available_white_cards, num_cards)
-        for card in cards:
-            self._state.available_white_cards.remove(card)
+        self._state.available_white_cards -= set(cards)
         cards.extend(rest_draw)
         return cards
 
     def _get_black_card(self):
         if len(self._state.available_black_cards) <= 0:
-            self._state.avalable_black_cards = copy.deepcopy(self._black_cards)
-        card = random.choice(self._state.available_black_cards)
+            self._state.avalable_black_cards = set(copy.deepcopy(self._black_cards))
+        card = random.sample(self._state.available_black_cards, 1)[0]
         self._state.available_black_cards.remove(card)
         return card
 
@@ -446,9 +451,9 @@ class State(object):
     def __init__(self, black_cards=None, white_cards=None):
         self.step = "no_game"
         if white_cards:
-            self.available_white_cards = copy.deepcopy(white_cards)
+            self.available_white_cards = set(copy.deepcopy(white_cards))
         if black_cards:
-            self.available_black_cards = copy.deepcopy(black_cards)
+            self.available_black_cards = set(copy.deepcopy(black_cards))
         self.winning_score = 6
         self.round_length = 90
         self.black_card = None
