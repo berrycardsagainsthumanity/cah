@@ -1,0 +1,328 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+/* clear hack */
+.container:before,
+.container:after {
+    content: "";
+    display: table;
+}
+
+.container:after {
+    clear: both;
+}
+
+.header {
+    padding-left: 5px;
+}
+
+.winning_group .card {
+    border: 1px blue solid;
+    box-shadow: 5px 5px 5px blue;
+
+}
+
+.timers {
+    float: right;
+}
+
+.card {
+    float: left;
+    height: 160px;
+    width: 125px;
+    font-size: 80%;
+    display: block;
+    box-shadow: 5px 5px 5px #aaa;
+    margin: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    font-family: Arial, "helvetica neue", helvetica, sans-serif;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.card_group {
+    display: block;
+    float: left;
+    margin-bottom: 5px;
+}
+
+.card_group_2cards {
+    margin-right: 5px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+
+.card_group_3cards {
+    margin-right: 5px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+
+.white_card {
+    background-color: #fff;
+    background-image: -moz-linear-gradient(90deg, #dedede, #ffffff 33px);
+    background-image: -webkit-linear-gradient(90deg, #dedede, #ffffff 33px);
+    background-image: -o-linear-gradient(90deg, #dedede, #ffffff 33px);
+    background-image: -ms-linear-gradient(90deg, #dedede, #ffffff 33px);
+    background-image: linear-gradient(#fff, #fff 75%, #dedede);
+    cursor: pointer;
+}
+
+.hand .white_card:hover {
+    transform: scale(1.05, 1.05);
+    -ms-transform: scale(1.05, 1.05); /* IE 9 */
+    -webkit-transform: scale(1.05, 1.05); /* Safari and Chrome */
+    -o-transform: scale(1.05, 1.05); /* Opera */
+    -moz-transform: scale(1.05, 1.05); /* Firefox */
+
+    transition: all 0.3s ease-in-out;
+
+    -moz-transition: all 0.3s ease-in-out; /* Firefox 4 */
+    -webkit-transition: all 0.3s ease-in-out; /* Safari and Chrome */
+    -o-transition: all 0.3s ease-in-out; /* Opera */
+}
+
+
+.black_card {
+    color: #fff;
+    background-color: #000;
+    background-image: -moz-linear-gradient(90deg, #333, #000000 33px);
+    background-image: -webkit-linear-gradient(90deg, #333, #000000 33px);
+    background-image: -o-linear-gradient(90deg, #333, #000000 33px);
+    background-image: -ms-linear-gradient(90deg, #333, #000000 33px);
+    background-image: linear-gradient(#000, #000 75%, #333);
+    position: relative;
+}
+
+.black_card .card_text {
+    float: left;
+}
+
+.num_white_cards_1{
+    display: none;
+}
+
+.num_white_cards_2,
+.num_white_cards_3 {
+    font-size: 10px;
+    background-color: white;
+    border: 1px solid white;
+    color: black;
+    text-align: center;
+    width: 14px;
+    border-radius: 50%;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+}
+
+.play_area, .hand {
+    display: block;
+    position: relative;
+    padding: 5px;
+}
+
+.hand {
+    border-bottom: 1px solid #ccc;
+}
+
+.overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: none;
+    background-color: gray;
+    border: 1px black;
+    border-radius: 2px;
+    opacity: 0.80;
+    text-align: center;
+}
+
+.overlay_text {
+    padding: 10px;
+    opacity: 1;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    font-size: 4em;
+}
+
+@media (max-width: 1025px) {
+    .overlay_text {
+        font-size: 2.5em;
+    }
+}
+
+.hand_container {
+    position: relative;
+	min-width: 50vw;
+	min-height: 20vh;
+}
+
+.afk {
+    background-color: #d3d3d3;
+}
+
+ul {
+    list-style: none;
+    margin: 1em 0;
+    padding: 0;
+}
+
+ul li {
+    font-weight: bold;
+    margin: 0;
+    padding: 3px 10px 5px 20px;
+    border-bottom: 2px solid #ccc;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #fff;
+    border-top: 2px solid #fff;
+}
+
+.round_winner {
+    border: 2px solid blue;
+    border-radius: 5px;
+    background-color: #bfcdff;
+}
+
+.unplayed {
+    border: 2px solid blue;
+    border-radius: 5px;
+}
+
+.czar {
+    border: 2px solid grey;
+    border-radius: 5px;
+}
+
+.wrapper {
+    width: 100%;
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -200px;
+}
+
+.left_pane {
+    float: left;
+    margin-right: 200px;
+}
+
+.sidebar {
+    width: 190px;
+    margin-left: -200px;
+    float: right;
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
+.push {
+    height: 200px;
+    clear: both;
+}
+
+.chat_wrapper {
+    bottom: 0px;
+    height: 200px;
+    border-top: 1px solid lightgrey;
+    width: 100%;
+    display: block;
+    background-color: white;
+    left: 0px;
+    position: fixed;
+}
+
+.chat {
+    margin-bottom: 30px;
+    overflow-y: scroll;
+    height: 170px;
+}
+
+.chat_input {
+    position: absolute;
+    bottom: 0px;
+    display: block;
+    left: 0px;
+    width: 300px;
+}
+
+.chat_user {
+    font-weight: bold;
+    font-size: 85%;
+    font-family: Arial, "helvetica neue", helvetica, sans-serif;
+}
+
+.kick_user {
+    display: none;
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.afk_checkbox {
+}
+
+.server {
+    color: blue;
+}
+
+.restart_timer {
+    display: none;
+}
+
+.size_slider {
+    width: 100px;
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.dialog{
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    border: 2px solid black;
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-right: 50px;
+}
+
+.room{
+    padding: 5px;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.highlight{
+    background-color: #fcefa1;
+}
+
+.chat_msg .black{
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    padding-left: 2px;
+}
+
+.chat_msg .white{
+    color: black;
+    border-radius: 3px;
+
+}
