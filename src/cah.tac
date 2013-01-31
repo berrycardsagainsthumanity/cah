@@ -9,7 +9,7 @@ from autobahn.wamp import WampServerFactory
 import pystache
 from caewebsockets import CahWampServer, CahWampService
 
-WEBROOT_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "webroot")
+WEBROOT_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "www")
 
 with open("config.yml") as f:
     config = yaml.load(f)
@@ -29,11 +29,11 @@ CahWampService(
     ).setServiceParent(cahService)
 
 ## Set up the web server
-fileResource = static.File(os.path.join(WEBROOT_DIR, "static"))
+fileResource = static.File(os.path.join(WEBROOT_DIR))
 
 # This is the ugly bit--we need to construct a resource tree to get our templated .js in here
-jsResource = static.File(os.path.join(WEBROOT_DIR, "static", "js"))
-with open(os.path.join(WEBROOT_DIR, "static", "js", "init.mustache")) as f:
+jsResource = static.File(os.path.join(WEBROOT_DIR, "js"))
+with open(os.path.join(WEBROOT_DIR, "js", "init.mustache")) as f:
     jsResource.putChild(
         'init.js',
         static.Data(pystache.render(f.read(), config).encode('utf-8'), "application/javascript"),
