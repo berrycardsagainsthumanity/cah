@@ -201,9 +201,6 @@ class Game(object):
     def restart_timer(self):
         self._start_round_timer(self._state.round_length)
 
-    def get_users(self):
-        return self.users
-
     def _start_round_timer(self, duration):
         self._cancel_round_timer()
         self._publish("show_timer", {
@@ -268,7 +265,7 @@ class Game(object):
         else:
             extra_cards = 0
 
-        for i, user in enumerate(self.users):
+        for user in self.users:
             if not user.czar and not user.afk:
                 num_cards = len(user.hand)
                 cards = self._get_white_cards(10 + extra_cards - num_cards)
