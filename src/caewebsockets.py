@@ -2,11 +2,7 @@ import os
 import sys
 
 import yaml
-from twisted.application import service
-from twisted.internet import reactor
-from twisted.python import log
 from autobahn.wamp import WampServerFactory, WampServerProtocol, exportRpc
-from autobahn.websocket import listenWS
 
 from game import Game
 from roomsmanager import rooms, get_smallest_game_id, create_new_game, get_or_create_room
@@ -15,7 +11,7 @@ with open("config.yml") as f:
     config = yaml.load(f)
     config['admin_password'] = os.getenv('CAH_ADMIN_PASS', config['admin_password'])
 
-class CahWampServer(WampServerProtocol):
+class CahWampServerProtocol(WampServerProtocol):
     def __init__(self):
         self._username = ""
         self._game_id = -1
@@ -83,7 +79,7 @@ class CahWampServer(WampServerProtocol):
         elif self._game:
             self._game.remove_user(self._username)
         self._game_id = game_id
-        prefix = 'http://{}:{}/{}{}#'
+        prefix = 'http://{}:{}/ws/{}{}#'
         self.registerForRpc(self, prefix.format(
             config['server_domain'],
             config['server_port'],
@@ -102,7 +98,7 @@ class CahWampServer(WampServerProtocol):
         return game_id
 
     def onSessionOpen(self):
-        self.registerProcedureForRpc("http://{server_domain}:{server_port}/#join_game".format(**config),
+        self.registerProcedureForRpc("http://{server_domain}:{server_port}/ws/#join_game".format(**config),
             self.join_game)
 
     def connectionLost(self, reason):
@@ -113,15 +109,11 @@ class CahWampServer(WampServerProtocol):
         except:
             pass
 
-class CahWampService(service.Service):
-    def __init__(self, server, port, topicuri, factory):
-        self.server = server
-        self.port = port
-        self.topicuri = topicuri
-        self.factory = factory
-    
-    def startService(self):
-        Game.register_cah_wamp_client(self.factory)
-        Game.set_publish_uri(self.topicuri)
-        listenWS(self.factory)
-        log.msg('Started CAH Websocket server')
+class CahServerFactory(WampServerFactory):
+    protocol = CahWampServerProtocol
+
+    def __init__(self, url, publish_uri, **kwargs):
+        WampServerFactory.__init__(self, url, **kwargs)
+        Game.register_cah_wamp_client(self)
+        Game.set_publish_uri(publish_uri)
+        self.startFactory() #hack!
