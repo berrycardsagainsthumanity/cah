@@ -13,13 +13,6 @@ ABS_PATH = os.path.dirname(os.path.realpath(__file__))
 
 publish = "http://{}/{}#{}"
 
-def find(seq, f):
-    """Return first item in sequence where f(item) == True."""
-    for item in seq:
-        if f(item):
-            return item
-
-
 class Game(object):
     def __init__(self, game_id, empty_game_callback):
         self.users = []
@@ -134,17 +127,23 @@ class Game(object):
     def choose_white(self, username, card_id):
         user = self._get_user(username)
         max_whites = self._state.black_card['num_white_cards']
-        whites_played = len(user.white_cards_played) + 1
 
+        card = next((x for x in user.hand if x['card_id'] == card_id), None)
+        if card is None:
+            # The user has managed to play a card not in their hand; force sync
+            self._publish("send_hand",
+                {"white_cards": user.hand},
+                eligible=[user.session])
+            return
+
+        whites_played = len(user.white_cards_played) + 1
         if whites_played > max_whites:
             raise "[](/flutno)"
-
         if whites_played == max_whites:
             self._publish("max_whites",
                 eligible=[self._get_user(username).session])
 
-        card = [x for x in user.hand if x['card_id'] == card_id][0]
-        user.hand = [x for x in user.hand if x['card_id'] != card_id]
+        user.hand.remove(card)
         user.white_cards_played.append(card)
         user.afk = False
 
@@ -360,9 +359,9 @@ class Game(object):
 
     def _get_user(self, username=None, session_id=None):
         if username:
-            return find(self.users, lambda u: u.username == username)
+            return next((u for u in self.users if u.username == username), None)
         if session_id:
-            return find(self.users, lambda u: u.session.session_id == session_id)
+            return next((u for u in self.users if u.session.session_id == session_id), None)
 
 
     def _publish(self, topic, data=None, exclude=None, eligible=None):
