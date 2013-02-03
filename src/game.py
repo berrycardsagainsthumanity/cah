@@ -128,7 +128,7 @@ class Game(object):
         user = self._get_user(username)
         max_whites = self._state.black_card['num_white_cards']
 
-        card = next((x for x in user.hand if x['card_id'] == card_id), None)
+        card = next((x for x in user.hand if x['card_id'] == int(card_id)), None)
         if card is None:
             # The user has managed to play a card not in their hand; force sync
             self._publish("send_hand",
