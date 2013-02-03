@@ -1,4 +1,4 @@
-from itertools import cycle
+from itertools import cycle, islice
 import os
 import random
 from threading import Timer
@@ -277,28 +277,12 @@ class Game(object):
         self._start_round_timer(self._state.round_length)
 
     def _set_next_czar(self):
-        try:
-            set_czar = False
-            users = [u for u in self.users if u.afk == False]
-            for i in range(0, len(users) + 1):
-                user = users[(i + 1) % len(users)]
-                if user.czar:
-                    user.czar = None
-                    set_czar = True
-                elif set_czar:
-                    user.czar = 'czar'
-                    return user
-            if not set_czar:
-                users[0].czar = 'czar'
-                return users[0]
-        except:
-            if len(users > 0):
-                users[0].czar = 'czar'
-        finally:
-            for user in self.users:
-                if user.afk:
-                    user.czar = None
-
+        czar_idx = next((idx for (idx, u) in enumerate(self.users) if u.czar), -1)
+        for user in self.users:
+            user.czar = False
+        next_czar = next(u for u in islice(cycle(self.users), czar_idx+1, len(self.users)+czar_idx+1) if not u.afk)
+        next_czar.czar = True
+        return next_czar
 
     def _get_white_cards(self, num_cards):
         # If the deck is about to run out, draw up the rest of the deck and reshuffle
@@ -399,7 +383,7 @@ class User(object):
         self.username = username
         self.white_cards_played = []
         self.hand = []
-        self.czar = ''
+        self.czar = False
         self.played_round = ''
         self.score = 0
         self.playing_round = None
@@ -423,7 +407,7 @@ class User(object):
     def reset(self):
         self.white_cards_played = []
         self.hand = []
-        self.czar = None
+        self.czar = False
         self.score = 0
         self.played_round = '',
         self.unplayed = False,
