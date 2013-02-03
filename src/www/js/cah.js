@@ -176,7 +176,7 @@ cah.start = function () {
         var $this = $(ev.target);
         var id = $this.attr('card_id');
         $this.appendTo(".play_area_whites");
-        cah.emit("choose_white", +id);
+        cah.emit("choose_white", id);
         ev.preventDefault();
     });
 

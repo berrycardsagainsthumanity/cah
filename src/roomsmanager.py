@@ -9,7 +9,7 @@ def get_smallest_game_id():
     if next_id == 0:
         create_new_game()
 
-    smallest = min(rooms, key=lambda g: len(g.get_users()))
+    smallest = min(rooms, key=lambda g: len(g.users))
     return smallest.game_id
 
 def create_new_game(game_id = None):
