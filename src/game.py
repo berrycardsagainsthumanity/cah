@@ -11,7 +11,7 @@ from utils import roundrobin
 
 ABS_PATH = os.path.dirname(os.path.realpath(__file__))
 
-publish = "http://{}/{}#{}"
+publish = "http://{}/ws/{}#{}"
 
 class Game(object):
     def __init__(self, game_id, empty_game_callback):

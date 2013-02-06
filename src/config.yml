@@ -3,8 +3,10 @@ admin_password: asdf
 
 # Websocket configuration
 websocket_domain: localhost
-websocket_port: 9000
+websocket_port: 8765
 
 # Web server configuration
 server_domain: localhost
 server_port: 8765
+server_proxy_port: 8765
+server_interface: ""
