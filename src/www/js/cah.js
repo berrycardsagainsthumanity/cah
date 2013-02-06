@@ -181,7 +181,7 @@ cah.start = function () {
     });
 
     $('.chat_input').keydown(function (event) {
-        //if (!cah.username) return;
+        if (!cah.username) return;
         var $this = $(this);
         if (event.keyCode == 9) {  //tab pressed
             event.preventDefault(); // stops its action
