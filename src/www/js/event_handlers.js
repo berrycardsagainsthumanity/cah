@@ -11,7 +11,7 @@ cah.eventHandlers = (function () {
     var card_size_css_rule;
     var ss = document.styleSheets;
     for (var i = 0; i < document.styleSheets.length; ++i) {
-        if (ss[i].href && ss[i].href.indexOf('js/cah.css') !== 0) {
+        if (ss[i].href && ss[i].href.indexOf('js/cah.css') >= 0) {
             for (var j = 0; j < ss[i].cssRules.length; ++j) {
                 if (ss[i].cssRules[j].selectorText == ".card") {
                     card_size_css_rule = ss[i].cssRules[j] ?
