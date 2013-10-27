@@ -48,3 +48,18 @@
   active: true
   base: false
   tag: VS
+-
+  name: The Third Expansion
+  active: true
+  base: false
+  tag: X3
+-
+  name: Pax East 2013 Expansion
+  active: true
+  base: false
+  tag: PAXE13
+-
+  name: Pax Prime 2013 Expansion
+  active: true
+  base: false
+  tag: PAXP13
